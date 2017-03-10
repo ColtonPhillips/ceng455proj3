@@ -7,7 +7,7 @@
 **     Version     : Component 1.2.0, Driver 1.4, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-08, 15:19, # CodeGen: 9
+**     Date/Time   : 2017-03-10, 01:18, # CodeGen: 11
 **     Abstract    :
 **
 **     Settings    :
@@ -1353,6 +1353,8 @@
 **         deinit_gpio_pins       - void deinit_gpio_pins(uint32_t instance);
 **         init_jtag_pins         - void init_jtag_pins(uint32_t instance);
 **         deinit_jtag_pins       - void deinit_jtag_pins(uint32_t instance);
+**         init_llwu_pins         - void init_llwu_pins(uint32_t instance);
+**         deinit_llwu_pins       - void deinit_llwu_pins(uint32_t instance);
 **         init_osc_pins          - void init_osc_pins(uint32_t instance);
 **         deinit_osc_pins        - void deinit_osc_pins(uint32_t instance);
 **         init_tpiu_pins         - void init_tpiu_pins(uint32_t instance);

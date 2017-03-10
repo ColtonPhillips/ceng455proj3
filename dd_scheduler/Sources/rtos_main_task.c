@@ -38,8 +38,10 @@ extern "C" {
 
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-
-
+#include "GPIO.h"
+#include "RGB.h"
+#include "BTN.h"
+#include "ACCEL.h"
 /* Initialization of Processor Expert components function prototype */
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
 extern void PEX_components_init(void);
@@ -54,17 +56,44 @@ extern void PEX_components_init(void);
 **     Returns : Nothing
 ** ===================================================================
 */
+
+void init_main_task() {
+	init_GPIO(); // init the input and output gpios
+	init_buttons(); // init the 2 buttons
+	init_RGB_light(); // blue light indicates the light system is on.
+}
+
+void have_fun() {
+	printf("%d %d \n",GPIO_DRV_ReadPinInput(ACCEL_2),GPIO_DRV_ReadPinInput(ACCEL_3));
+	if (left_button()) {
+		red_light();
+		printf("0");
+	}
+	if (right_button()) {
+		green_light();
+		printf("1");
+	}
+	if (no_button()) {
+		blue_light();
+		printf("2");
+	}
+	int r = right_button();
+	int l = left_button();
+	printf("  %d , %d : \n",l,r);
+}
+
 void main_task(os_task_param_t task_init_data)
 {
   /* Initialization of Processor Expert components (when some RTOS is active). DON'T REMOVE THIS CODE!!! */
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
   PEX_components_init(); 
 #endif 
-  	  //GPIO_DRV_Init(NULL, gpio1_OutConfig0);
-  	 // GPIO_DRV_TogglePinOutput(LED_Blue);
+
+  	init_main_task();
 	while (1) {
-		//GPIO_DRV_TogglePinOutput(LED_Red);
-		//OSA_TimeDelay(1000);
+		if (0) {party_lights();}else{kill_lights();}
+		//have_fun();
+		OSA_TimeDelay(500);
 	}
 }
 

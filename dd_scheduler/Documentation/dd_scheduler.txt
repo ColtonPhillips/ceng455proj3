@@ -211,6 +211,13 @@ Module "pin_init"  (component PinSettings)
    - pin_init_deinit_jtag_pins -JTAG method de-configures registers according to settings of routing. This method is enabled 
                 only if any pin of corresponding peripheral type is selected. Selected pins are either user selected pins or 
                 pins selected in pin items in components. Call this method code to un-route desired pins into JTAG peripheral.
+   - pin_init_init_llwu_pins -LLWU method configures registers according to settings  of routing and electrical features. This 
+                method is enabled only if any pin of corresponding peripheral type is selected. Selected pins are either user 
+                selected pins or pins selected in pin items in components. Call this method code to route desired pins into 
+                LLWU peripheral.
+   - pin_init_deinit_llwu_pins -LLWU method de-configures registers according to settings of routing. This method is enabled 
+                only if any pin of corresponding peripheral type is selected. Selected pins are either user selected pins or 
+                pins selected in pin items in components. Call this method code to un-route desired pins into LLWU peripheral.
    - pin_init_init_osc_pins -OSC method configures registers according to settings  of routing and electrical features. This 
                 method is enabled only if any pin of corresponding peripheral type is selected. Selected pins are either user 
                 selected pins or pins selected in pin items in components. Call this method code to route desired pins into OSC 

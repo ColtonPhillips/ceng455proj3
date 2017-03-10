@@ -81,7 +81,8 @@ Sources/rtos_main_task.o: ../Sources/rtos_main_task.c \
  C:/project3-colton/dd_scheduler/Generated_Code/DD_Monitor.h \
  C:/project3-colton/dd_scheduler/Generated_Code/DD_Generator.h \
  C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
- ../Sources/rtos_main_task.h ../Sources/os_tasks.h
+ ../Sources/rtos_main_task.h ../Sources/os_tasks.h ../Sources/GPIO.h \
+ ../Sources/RGB.h ../Sources/BTN.h ../Sources/ACCEL.h
 
 C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h:
 
@@ -250,3 +251,11 @@ C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h:
 ../Sources/rtos_main_task.h:
 
 ../Sources/os_tasks.h:
+
+../Sources/GPIO.h:
+
+../Sources/RGB.h:
+
+../Sources/BTN.h:
+
+../Sources/ACCEL.h:

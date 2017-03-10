@@ -211,7 +211,7 @@
 			</tr>
 			<tr>
 				<td>31</td><td>ADC0_SE17/PTE24/UART4_TX/I2C0_SCL/EWM_OUT_b</td><td>ACCEL_SCL/J2_18</td>
-				<td bgcolor='#F8FF9A'>ADC0</td><td bgcolor='#F8FF9A'>adc_se17</td><td bgcolor='#F8FF9A'>alt0</td><td bgcolor='#F8FF9A'>Input</td>
+				<td bgcolor='#F7DCFF'>PTE</td><td bgcolor='#F7DCFF'>port24</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
 			<tr>
 				<td>32</td><td>ADC0_SE18/PTE25/UART4_RX/I2C0_SDA/EWM_IN</td><td>ACCEL_SDA/J2_20</td>
@@ -241,9 +241,9 @@
 			</tr>
 			<tr>
 				<td rowspan='2'>38</td><td rowspan='2'>PTA4/LLWU_P3/FTM0_CH1/NMI_b/EZP_CS_b</td><td rowspan='2'>BUTTON_SW3</td>
-				<td bgcolor='#EBD4BD'>SystemControl</td><td bgcolor='#EBD4BD'>scb_nmi</td><td bgcolor='#EBD4BD'>alt7</td><td bgcolor='#EBD4BD'>Input</td>
+				<td bgcolor='#F7DCFF'>PTA</td><td bgcolor='#F7DCFF'>port4</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
-			<tr bgcolor='#969696'><td>non-peripheral</td><td>NMI</td><td>alt7</td><td>Not Specified</td></tr>
+			<tr bgcolor='#CCB6A0'><td>LLWU</td><td>llwu_wakeup3</td><td>alt1</td><td>Input</td></tr>
 			<tr>
 				<td>39</td><td>PTA5/USB_CLKIN/FTM0_CH2/RMII0_RXER/MII0_RXER/CMP2_OUT/I2S0_TX_BCLK/JTAG_TRST_b</td><td>RMII0_RXER</td>
 				<td></td><td></td><td></td><td></td>
@@ -413,11 +413,10 @@
 				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
-				<td rowspan='3'>78</td><td rowspan='3'>CMP0_IN0/PTC6/LLWU_P10/SPI0_SOUT/PDB0_EXTRG/I2S0_RX_BCLK/FB_AD9/I2S0_MCLK</td><td rowspan='3'>BUTTON_SW2/ACCEL_INT1</td>
-				<td bgcolor='#EFF174'>CMP0</td><td bgcolor='#EFF174'>cmp_pos0</td><td bgcolor='#EFF174'>alt0</td><td bgcolor='#EFF174'>Input</td>
+				<td rowspan='2'>78</td><td rowspan='2'>CMP0_IN0/PTC6/LLWU_P10/SPI0_SOUT/PDB0_EXTRG/I2S0_RX_BCLK/FB_AD9/I2S0_MCLK</td><td rowspan='2'>BUTTON_SW2/ACCEL_INT1</td>
+				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port6</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
-			<tr bgcolor='#EFF174'><td>CMP0</td><td>cmp_neg0</td><td>alt0</td><td>Input</td></tr>
-			<tr bgcolor='#EFF174'><td>CMP0</td><td>cmp_in0</td><td>alt0</td><td>Input</td></tr>
+			<tr bgcolor='#CCB6A0'><td>LLWU</td><td>llwu_wakeup10</td><td>alt1</td><td>Input</td></tr>
 			<tr>
 				<td rowspan='3'>79</td><td rowspan='3'>CMP0_IN1/PTC7/SPI0_SIN/USB_SOF_OUT/I2S0_RX_FS/FB_AD8</td><td rowspan='3'>J1_13</td>
 				<td bgcolor='#EFF174'>CMP0</td><td bgcolor='#EFF174'>cmp_pos1</td><td bgcolor='#EFF174'>alt0</td><td bgcolor='#EFF174'>Input</td>
@@ -452,7 +451,7 @@
 			</tr>
 			<tr>
 				<td>85</td><td>PTC13/UART4_CTS_b/FB_AD26</td><td>ACCEL_INT2</td>
-				<td></td><td></td><td></td><td></td>
+				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port13</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
 			<tr>
 				<td>86</td><td>PTC14/UART4_RX/FB_AD25</td><td>J199_3</td>
@@ -460,7 +459,7 @@
 			</tr>
 			<tr>
 				<td>87</td><td>PTC15/UART4_TX/FB_AD24</td><td>J199_4</td>
-				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port15</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td>88</td><td>VSS131</td><td><small><i>same</i></small></td>
@@ -1947,7 +1946,7 @@
 			</tr>
 			<tr>
 				<td>31</td><td>ADC0_SE17/PTE24/UART4_TX/I2C0_SCL/EWM_OUT_b</td><td>ACCEL_SCL/J2_18</td>
-				<td bgcolor='#F8FF9A'>ADC0</td><td bgcolor='#F8FF9A'>adc_se17</td><td bgcolor='#F8FF9A'>alt0</td><td bgcolor='#F8FF9A'>Input</td>
+				<td bgcolor='#F7DCFF'>PTE</td><td bgcolor='#F7DCFF'>port24</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
 			<tr>
 				<td>32</td><td>ADC0_SE18/PTE25/UART4_RX/I2C0_SDA/EWM_IN</td><td>ACCEL_SDA/J2_20</td>
@@ -1977,9 +1976,9 @@
 			</tr>
 			<tr>
 				<td rowspan='2'>38</td><td rowspan='2'>PTA4/LLWU_P3/FTM0_CH1/NMI_b/EZP_CS_b</td><td rowspan='2'>BUTTON_SW3</td>
-				<td bgcolor='#EBD4BD'>SystemControl</td><td bgcolor='#EBD4BD'>scb_nmi</td><td bgcolor='#EBD4BD'>alt7</td><td bgcolor='#EBD4BD'>Input</td>
+				<td bgcolor='#F7DCFF'>PTA</td><td bgcolor='#F7DCFF'>port4</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
-			<tr bgcolor='#969696'><td>non-peripheral</td><td>NMI</td><td>alt7</td><td>Not Specified</td></tr>
+			<tr bgcolor='#CCB6A0'><td>LLWU</td><td>llwu_wakeup3</td><td>alt1</td><td>Input</td></tr>
 			<tr>
 				<td>39</td><td>PTA5/USB_CLKIN/FTM0_CH2/RMII0_RXER/MII0_RXER/CMP2_OUT/I2S0_TX_BCLK/JTAG_TRST_b</td><td>RMII0_RXER</td>
 				<td></td><td></td><td></td><td></td>
@@ -2149,11 +2148,10 @@
 				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
-				<td rowspan='3'>78</td><td rowspan='3'>CMP0_IN0/PTC6/LLWU_P10/SPI0_SOUT/PDB0_EXTRG/I2S0_RX_BCLK/FB_AD9/I2S0_MCLK</td><td rowspan='3'>BUTTON_SW2/ACCEL_INT1</td>
-				<td bgcolor='#EFF174'>CMP0</td><td bgcolor='#EFF174'>cmp_pos0</td><td bgcolor='#EFF174'>alt0</td><td bgcolor='#EFF174'>Input</td>
+				<td rowspan='2'>78</td><td rowspan='2'>CMP0_IN0/PTC6/LLWU_P10/SPI0_SOUT/PDB0_EXTRG/I2S0_RX_BCLK/FB_AD9/I2S0_MCLK</td><td rowspan='2'>BUTTON_SW2/ACCEL_INT1</td>
+				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port6</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
-			<tr bgcolor='#EFF174'><td>CMP0</td><td>cmp_neg0</td><td>alt0</td><td>Input</td></tr>
-			<tr bgcolor='#EFF174'><td>CMP0</td><td>cmp_in0</td><td>alt0</td><td>Input</td></tr>
+			<tr bgcolor='#CCB6A0'><td>LLWU</td><td>llwu_wakeup10</td><td>alt1</td><td>Input</td></tr>
 			<tr>
 				<td rowspan='3'>79</td><td rowspan='3'>CMP0_IN1/PTC7/SPI0_SIN/USB_SOF_OUT/I2S0_RX_FS/FB_AD8</td><td rowspan='3'>J1_13</td>
 				<td bgcolor='#EFF174'>CMP0</td><td bgcolor='#EFF174'>cmp_pos1</td><td bgcolor='#EFF174'>alt0</td><td bgcolor='#EFF174'>Input</td>
@@ -2188,7 +2186,7 @@
 			</tr>
 			<tr>
 				<td>85</td><td>PTC13/UART4_CTS_b/FB_AD26</td><td>ACCEL_INT2</td>
-				<td></td><td></td><td></td><td></td>
+				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port13</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
 			</tr>
 			<tr>
 				<td>86</td><td>PTC14/UART4_RX/FB_AD25</td><td>J199_3</td>
@@ -2196,7 +2194,7 @@
 			</tr>
 			<tr>
 				<td>87</td><td>PTC15/UART4_TX/FB_AD24</td><td>J199_4</td>
-				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port15</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td>88</td><td>VSS131</td><td><small><i>same</i></small></td>

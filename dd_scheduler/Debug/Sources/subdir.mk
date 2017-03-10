@@ -4,19 +4,31 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Sources/ACCEL.c \
+../Sources/BTN.c \
 ../Sources/Events.c \
+../Sources/GPIO.c \
+../Sources/RGB.c \
 ../Sources/main.c \
 ../Sources/os_tasks.c \
 ../Sources/rtos_main_task.c 
 
 OBJS += \
+./Sources/ACCEL.o \
+./Sources/BTN.o \
 ./Sources/Events.o \
+./Sources/GPIO.o \
+./Sources/RGB.o \
 ./Sources/main.o \
 ./Sources/os_tasks.o \
 ./Sources/rtos_main_task.o 
 
 C_DEPS += \
+./Sources/ACCEL.d \
+./Sources/BTN.d \
 ./Sources/Events.d \
+./Sources/GPIO.d \
+./Sources/RGB.d \
 ./Sources/main.d \
 ./Sources/os_tasks.d \
 ./Sources/rtos_main_task.d 
