@@ -37,8 +37,9 @@ extern "C" {
 #endif 
 
 
-/* User includes (#include below this line is not maintained by Processor Expert) */
 
+/* User includes (#include below this line is not maintained by Processor Expert) */
+#include "helper_function.h"
 /*
 ** ===================================================================
 **     Callback    : dd_scheduler_task
@@ -50,9 +51,14 @@ extern "C" {
 */
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
+	prntln("dd_scheduler_task");
+	// List of
 	while (1) {
+		//_task
 
 	}
+
+	_task_block();
 }
 
 /*
@@ -66,9 +72,12 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 */
 void generator_task(os_task_param_t task_init_data)
 {
+	prntln("generator_task");
 	while (1) {
 
 	}
+
+	_task_block();
 }
 
 /*
@@ -82,9 +91,12 @@ void generator_task(os_task_param_t task_init_data)
 */
 void monitor_task(os_task_param_t task_init_data)
 {
+	prntln("monitor_task");
 	while (1) {
 
 	}
+
+	_task_block();
 }
 
 /*
@@ -98,9 +110,11 @@ void monitor_task(os_task_param_t task_init_data)
 */
 void idle_task(os_task_param_t task_init_data)
 {
+	prntln("idle_task");
 	while (1) {
 
 	}
+	_task_block();
 }
 
 /*
@@ -114,9 +128,12 @@ void idle_task(os_task_param_t task_init_data)
 */
 void user_task(os_task_param_t task_init_data)
 {
+	prntln("user_task");
 	while (1) {
 
 	}
+
+	_task_block();
 }
 
 /* END os_tasks */

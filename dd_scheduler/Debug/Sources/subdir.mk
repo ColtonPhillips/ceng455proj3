@@ -9,6 +9,7 @@ C_SRCS += \
 ../Sources/Events.c \
 ../Sources/GPIO.c \
 ../Sources/RGB.c \
+../Sources/helper_function.c \
 ../Sources/main.c \
 ../Sources/os_tasks.c \
 ../Sources/rtos_main_task.c 
@@ -19,6 +20,7 @@ OBJS += \
 ./Sources/Events.o \
 ./Sources/GPIO.o \
 ./Sources/RGB.o \
+./Sources/helper_function.o \
 ./Sources/main.o \
 ./Sources/os_tasks.o \
 ./Sources/rtos_main_task.o 
@@ -29,6 +31,7 @@ C_DEPS += \
 ./Sources/Events.d \
 ./Sources/GPIO.d \
 ./Sources/RGB.d \
+./Sources/helper_function.d \
 ./Sources/main.d \
 ./Sources/os_tasks.d \
 ./Sources/rtos_main_task.d 
