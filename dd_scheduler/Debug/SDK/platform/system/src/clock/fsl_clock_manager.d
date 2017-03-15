@@ -1,5 +1,6 @@
 SDK/platform/system/src/clock/fsl_clock_manager.o: \
  ../SDK/platform/system/src/clock/fsl_clock_manager.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/MK64F12/include/MK64F12.h \
  C:/project3-colton/dd_scheduler/SDK/platform/CMSIS/Include/core_cm4.h \
@@ -50,6 +51,8 @@ SDK/platform/system/src/clock/fsl_clock_manager.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_rtc_hal.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h:
 

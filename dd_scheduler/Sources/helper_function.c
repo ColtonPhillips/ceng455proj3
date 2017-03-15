@@ -33,3 +33,21 @@ bool asrtmsg(char * str, bool b) {
 	}
 	return false;
 }
+
+void have_fun() {
+	if (in_left_button()) {
+		out_red_light();
+		printf("0");
+	}
+	if (in_right_button()) {
+		out_green_light();
+		printf("1");
+	}
+	if (in_no_button()) {
+		out_blue_light();
+		printf("2");
+	}
+	int r = in_right_button();
+	int l = in_left_button();
+	printf("  %d , %d : \n",l,r);
+}

@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/nio/src/nio_posix.o: \
  ../SDK/rtos/mqx/mqx/source/nio/src/nio_posix.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h \
  C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h \
  C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h \
@@ -51,6 +52,8 @@ SDK/rtos/mqx/mqx/source/nio/src/nio_posix.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_abi.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem_prv.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h:
 

@@ -1,4 +1,5 @@
 Sources/BTN.o: ../Sources/BTN.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/clockMan1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/osa1.h \
@@ -64,6 +65,8 @@ Sources/BTN.o: ../Sources/BTN.c \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_clock_manager.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_gpio_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h:
 

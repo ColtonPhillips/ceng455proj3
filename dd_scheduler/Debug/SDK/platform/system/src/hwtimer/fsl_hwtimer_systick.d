@@ -1,5 +1,6 @@
 SDK/platform/system/src/hwtimer/fsl_hwtimer_systick.o: \
  ../SDK/platform/system/src/hwtimer/fsl_hwtimer_systick.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_hwtimer.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_clock_manager.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h \
@@ -54,6 +55,8 @@ SDK/platform/system/src/hwtimer/fsl_hwtimer_systick.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_interrupt_manager.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_clock_manager.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_hwtimer.h:
 

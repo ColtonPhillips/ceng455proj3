@@ -41,7 +41,8 @@ extern "C" {
 #include "GPIO.h"
 #include "RGB.h"
 #include "BTN.h"
-#include "ACCEL.h"
+#include "MessagePool.h"
+#include "helper_function.h"
 /* Initialization of Processor Expert components function prototype */
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
 extern void PEX_components_init(void);
@@ -61,37 +62,17 @@ void init_main_task() {
 	init_GPIO(); // init the input and output gpios
 	init_buttons(); // init the 2 buttons
 	init_RGB_light(); // blue light indicates the light system is on.
-}
-
-void have_fun() {
-	//printf("%d %d \n",GPIO_DRV_ReadPinInput(ACCEL_2),GPIO_DRV_ReadPinInput(ACCEL_3));
-	if (in_left_button()) {
-		out_red_light();
-		printf("0");
-	}
-	if (in_right_button()) {
-		out_green_light();
-		printf("1");
-	}
-	if (in_no_button()) {
-		out_blue_light();
-		printf("2");
-	}
-	int r = in_right_button();
-	int l = in_left_button();
-	printf("  %d , %d : \n",l,r);
+	init_message_pool(); // Initializes the TASK_LIST message pool and DD q
 }
 
 /*
-// Priority+Order:
- *
- *
-#define MAINTASK_TASK        1U	// P:16
-#define DD_IDLE_TASK         4U // P:24
-#define DD_SCHEDULER_TASK    2U // P:16
-#define DD_MONITOR_TASK      5U // P:16
-#define DD_GENERATOR_TASK    6U // P:16
-#define DD_USER_TASK         3U // P:24
+ * Priority Order:
+ * 8 MAINTASK_TASK ???
+ * 9  DD_GENERATOR_TASK
+ * 10 DD_SCHEDULER_TASK
+ * 20 DD_USER_TASK
+ * 30 DD_IDLE_TASK
+ * 40 DD_MONITOR_TASK
 */
 
 void main_task(os_task_param_t task_init_data)
@@ -102,24 +83,14 @@ void main_task(os_task_param_t task_init_data)
 #endif 
 
   	init_main_task();
-/*
-// Spawn Tasks:
-//      DD_IDLE_TASK:   ###
-//      DD_SCHEDULER:      ###
-//   DD_MONITOR_TASK:         ###
-// DD_GENERATOR_TASK:            ###
-// DD_USER_TASK( by generator)      ###   ###       ###### ... etc.
-//time->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->
- * */
-  	_task_create(0,DD_IDLE_TASK,0);
-  	_task_create(0,DD_SCHEDULER_TASK,0);
-  	_task_create(0,DD_MONITOR_TASK,0);
-  	_task_create(0,DD_GENERATOR_TASK,0);
-
+  	//_task_create(0,DD_IDLE_TASK,0);
+  	//_task_create(0,DD_SCHEDULER_TASK,0);
+  	//_task_create(0,DD_MONITOR_TASK,0);
+  	//_task_create(0,DD_GENERATOR_TASK,0);
+  	out_kill_lights();
+  	_task_abort(_task_get_id());
 	while (1) {
-		if (0) {party_lights();}else{out_kill_lights();}
-		//have_fun();
-		OSA_TimeDelay(500);
+
 	}
 }
 

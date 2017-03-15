@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/nio/drivers/nio_tty/src/nio_tty.o: \
  ../SDK/rtos/mqx/mqx/source/nio/drivers/nio_tty/src/nio_tty.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h \
  C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
@@ -44,6 +45,8 @@ SDK/rtos/mqx/mqx/source/nio/drivers/nio_tty/src/nio_tty.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/drivers/nio_tty/nio_tty.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/ioctl.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h:
 

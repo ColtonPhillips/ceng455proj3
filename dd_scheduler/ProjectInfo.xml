@@ -261,11 +261,14 @@
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\scan_prv.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\stdio.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\strings\strings.c</PathName>
-      <PathName>C:\project3-colton\dd_scheduler\Sources\ACCEL.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\BTN.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Events.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\GPIO.c</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\MessagePool.c</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\Queues.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\RGB.c</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\access_functions.c</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\helper_function.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\main.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\os_tasks.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\rtos_main_task.c</PathName>
@@ -420,10 +423,13 @@
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\fp_prv.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\print_prv.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\scan_prv.h</PathName>
-      <PathName>C:\project3-colton\dd_scheduler\Sources\ACCEL.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\BTN.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Events.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\MessagePool.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\Queues.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\RGB.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\access_functions.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\helper_function.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\os_tasks.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\rtos_main_task.h</PathName>
     </GeneratedHs>

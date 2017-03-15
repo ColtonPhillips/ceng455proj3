@@ -11,5 +11,6 @@
 void prntln(char * str);
 bool asrt(bool b);
 bool asrtmsg(char * str, bool b);
+void have_fun();
 
 #endif /* SOURCES_HELPER_FUNCTION_H_ */

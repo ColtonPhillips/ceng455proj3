@@ -1,5 +1,6 @@
 SDK/platform/utilities/src/fsl_debug_console.o: \
  ../SDK/platform/utilities/src/fsl_debug_console.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
@@ -56,6 +57,8 @@ SDK/platform/utilities/src/fsl_debug_console.o: \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_mcg_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_osc_hal.h \
  ../SDK/platform/utilities/src/print_scan.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
 

@@ -7,7 +7,7 @@
 **     Version     : Component 1.3.0, Driver 01.00, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-10, 00:34, # CodeGen: 10
+**     Date/Time   : 2017-03-14, 16:23, # CodeGen: 15
 **     Contents    :
 **         Init - osa_status_t DD_Monitor_Init(void);
 **
@@ -66,7 +66,7 @@
 /* DD_Monitor task stack size */  
 #define DD_MONITOR_TASK_STACK_SIZE     1024U
 /* DD_Monitor task priority value */  
-#define DD_MONITOR_TASK_PRIORITY       16U
+#define DD_MONITOR_TASK_PRIORITY       25U
 /*
 ** ===================================================================
 **     Method      :  Init (component OS_Task)

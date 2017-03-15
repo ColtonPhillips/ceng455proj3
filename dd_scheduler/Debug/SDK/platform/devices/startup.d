@@ -1,4 +1,5 @@
 SDK/platform/devices/startup.o: ../SDK/platform/devices/startup.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  ../SDK/platform/devices/startup.h \
  ../SDK/platform/devices/fsl_device_registers.h \
  ../SDK/platform/devices/MK64F12/include/MK64F12.h \
@@ -11,6 +12,8 @@ SDK/platform/devices/startup.o: ../SDK/platform/devices/startup.c \
  ../SDK/platform/devices/MK64F12/include/MK64F12.h \
  ../SDK/platform/devices/MK64F12/include/fsl_bitaccess.h \
  ../SDK/platform/devices/MK64F12/include/MK64F12_features.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 ../SDK/platform/devices/startup.h:
 

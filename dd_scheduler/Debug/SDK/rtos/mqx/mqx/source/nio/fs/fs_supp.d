@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/nio/fs/fs_supp.o: \
  ../SDK/rtos/mqx/mqx/source/nio/fs/fs_supp.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  ../SDK/rtos/mqx/mqx/source/nio/fs/fs_supp.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
@@ -53,6 +54,8 @@ SDK/rtos/mqx/mqx/source/nio/fs/fs_supp.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_abi.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem_prv.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 ../SDK/rtos/mqx/mqx/source/nio/fs/fs_supp.h:
 

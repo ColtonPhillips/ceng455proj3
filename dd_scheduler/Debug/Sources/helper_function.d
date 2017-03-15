@@ -1,4 +1,5 @@
 Sources/helper_function.o: ../Sources/helper_function.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  ../Sources/helper_function.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
@@ -45,6 +46,8 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwsem.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 ../Sources/helper_function.h:
 

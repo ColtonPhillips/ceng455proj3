@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx_stdlib/source/stdio/fflush.o: \
  ../SDK/rtos/mqx/mqx_stdlib/source/stdio/fflush.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
@@ -46,6 +47,8 @@ SDK/rtos/mqx/mqx_stdlib/source/stdio/fflush.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  ../SDK/rtos/mqx/mqx_stdlib/source/stdio/buf_prv.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
 

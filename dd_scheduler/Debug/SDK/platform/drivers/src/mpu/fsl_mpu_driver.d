@@ -1,5 +1,6 @@
 SDK/platform/drivers/src/mpu/fsl_mpu_driver.o: \
  ../SDK/platform/drivers/src/mpu/fsl_mpu_driver.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_mpu_driver.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_mpu_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h \
@@ -22,6 +23,8 @@ SDK/platform/drivers/src/mpu/fsl_mpu_driver.o: \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_mcg_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_osc_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_interrupt_manager.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_mpu_driver.h:
 

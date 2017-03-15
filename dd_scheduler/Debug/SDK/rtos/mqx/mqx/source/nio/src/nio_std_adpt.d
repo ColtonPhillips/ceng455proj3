@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/nio/src/nio_std_adpt.o: \
  ../SDK/rtos/mqx/mqx/source/nio/src/nio_std_adpt.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
  C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/mcu/mqx_sdk_config.h \
@@ -43,6 +44,8 @@ SDK/rtos/mqx/mqx/source/nio/src/nio_std_adpt.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/unistd.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h:
 

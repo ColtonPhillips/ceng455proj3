@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/psp/cortex_m/int_kisr.o: \
  ../SDK/rtos/mqx/mqx/source/psp/cortex_m/int_kisr.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_interrupt_manager.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/MK64F12/include/MK64F12.h \
@@ -43,6 +44,8 @@ SDK/rtos/mqx/mqx/source/psp/cortex_m/int_kisr.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_abi.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem_prv.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_interrupt_manager.h:
 

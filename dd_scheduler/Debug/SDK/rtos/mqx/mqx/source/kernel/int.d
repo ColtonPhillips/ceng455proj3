@@ -1,5 +1,6 @@
 SDK/rtos/mqx/mqx/source/kernel/int.o: \
  ../SDK/rtos/mqx/mqx/source/kernel/int.c \
+ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/board/user_config.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
  C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/mcu/mqx_sdk_config.h \
@@ -43,6 +44,8 @@ SDK/rtos/mqx/mqx/source/kernel/int.o: \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_abi.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem_prv.h
+
+C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/board/user_config.h:
 
