@@ -83,11 +83,12 @@ void main_task(os_task_param_t task_init_data)
 #endif 
 
   	init_main_task();
+  	out_kill_lights();
   	//_task_create(0,DD_IDLE_TASK,0);
   	//_task_create(0,DD_SCHEDULER_TASK,0);
   	//_task_create(0,DD_MONITOR_TASK,0);
-  	//_task_create(0,DD_GENERATOR_TASK,0);
-  	out_kill_lights();
+  	_task_create(0,DD_GENERATOR_TASK,0);
+
   	_task_abort(_task_get_id());
 	while (1) {
 

@@ -9,41 +9,33 @@
 #include "MessagePool.h"
 
 _task_id dd_tcreate(unsigned int template_index, unsigned int deadline) {
-    // Open an message queue
+
+	// Open a message queue
 	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
 
-	// Create A task and set it to min priority
+	// Create a new task of the index and deadline
 	_task_id this_task_id = _task_create(0,template_index,deadline);
-	unsigned int priority = _sched_get_min_priority(0);
-	_task_set_priority(this_task_id,0,&priority);
 
-	// Allocate a message
-	MESSAGE_PTR create_task_msg_ptr = msgalloc();
-	// Populate a message
-	create_task_msg_ptr->HEADER.SOURCE_QID = 0;
-	create_task_msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, DD_QUEUE);
-	create_task_msg_ptr->HEADER.SIZE = sizeof(MESSAGE_HEADER_STRUCT) + sizeof(TASK_LIST);
-	create_task_msg_ptr->TASK_DATA = taskListFactory(this_task_id, deadline, template_index, _time_get_hwticks());
+	// Set task priority to that of the minimum (25?) (24?)
+	_mqx_uint priority = _task_get_priority(this_task_id,&priority);
+	unsigned int newpriority = _sched_get_min_priority(0);
+	_task_set_priority(this_task_id,newpriority,&priority);
 
-	// Send the message
-	if (!_msgq_send(create_task_msg_ptr)) {
-		printf("\nCould not send a message\n");
-		_task_block();
-	}
+	// Allocate, populate and send a msg
+	msgpush(DD_QUEUE, taskListFactory(DD_QUEUE, this_task_id, deadline, template_index, _time_get_hwticks()));
 
 	// Wait for reply at the q above
-	MESSAGE_PTR msg_ptr = _msgq_receive(TASK_CREATOR_QUEUE, 0);
-	if (msg_ptr == NULL) {
-		printf("\nCould not receive an DD Scheduler message\n");
-		_task_block();
-	}
-	// free the message
-	_msg_free(msg_ptr);
+	MESSAGE_PTR msg_ptr = msgreceive(TASK_CREATOR_QUEUE);
 
 	// Destroy the Q
 	_msgq_close(creator_qid);
 
-	//Returns to the invoking task
+	// use the message (check for error?)
+
+	// free the message
+	_msg_free(msg_ptr);
+
+	//Returns to the invoking task (todo errors)
 	return this_task_id;
 }
 

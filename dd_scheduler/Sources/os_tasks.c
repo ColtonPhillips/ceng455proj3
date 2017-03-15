@@ -52,18 +52,20 @@ extern "C" {
 **     Returns : Nothing
 ** ===================================================================
 */
-const int TASK_ARRAY_SIZE = 1024;
-const int NO_TASK = 0;
-void insertIntoTaskList(TASK_LIST_PTR * task_list_array, TASK_LIST_PTR insertedTask) {
-	// todo: keep track of length of list being used.
-	int i = 0;
-	for (i = 0; i < TASK_ARRAY_SIZE; i++) {
-		if (task_list_array[i]->deadline == NO_TASK) {
-			// insert it here
-			task_list_array[i] = insertedTask;
+
+	const int TASK_ARRAY_SIZE = 1024;
+	const int NO_TASK = 0;
+	void insertIntoTaskList(TASK_LIST_PTR * task_list_array, TASK_LIST insertedTask) {
+		// todo: keep track of length of list being used.
+		int i = 0;
+		for (i = 0; i < TASK_ARRAY_SIZE; i++) {
+			if (task_list_array[i]->deadline == NO_TASK) {
+				// insert it here
+				*task_list_array[i] = insertedTask;
+			}
 		}
 	}
-}
+
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
 	prntln("dd_scheduler_task");
@@ -75,40 +77,26 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		task_list_array[i]->deadline = NO_TASK;
 	}
 
-	TASK_LIST_PTR runningTask = NULL;
+	//TASK_LIST_PTR earliestDeadlineTask = NULL;
 
-	// Q is already available! dd_qid
+	// The Main Task initializes this task.
+	// Q is already available! dd_qid (DD_QUEUE) init'd in Main Task
 
 	// Wait for Any Message
-	MESSAGE_PTR msg_ptr = _msgq_receive(MSGQ_ANY_QUEUE, 0);
-	if (msg_ptr == NULL) {
-		printf("\nCould not receive an DD Scheduler message\n");
-		_task_block();
-	}
+	MESSAGE_PTR msg_ptr = msgreceive(MSGQ_ANY_QUEUE);
 
-	if (msg_ptr->HEADER.TARGET_QID == _msgq_get_id(0, DD_QUEUE)) { // putline
+	// Switch on the message
+	if (msgtarget_equals_q(msg_ptr,DD_QUEUE)) {
+
 		// put into the task list
-		insertIntoTaskList(task_list_array, &msg_ptr->TASK_DATA);
-		// pre-empt if possible
+		insertIntoTaskList(task_list_array, msg_ptr->TASK_DATA);
 
+		// Get Earliest Deadline
+		// earliestDeadlineTask = getEarliestDeadline(task_list_array);
 
-		// Allocate a message
-		MESSAGE_PTR creator_reply_msg_ptr = (MESSAGE_PTR)_msg_alloc(message_pool);
-		if (creator_reply_msg_ptr == NULL) {
-		 printf("\nCould not allocate a message\n");
-		 _task_block();
-		}
-		// Populate it
-		creator_reply_msg_ptr->HEADER.SOURCE_QID = 0;
-		creator_reply_msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, TASK_CREATOR_QUEUE);
-		creator_reply_msg_ptr->HEADER.SIZE = sizeof(MESSAGE_HEADER_STRUCT) + sizeof(_task_id);
-		creator_reply_msg_ptr->TASK_DATA = msg_ptr->TASK_DATA;
+		// Allocate a message, populate it, and send
+		msgpush(TASK_CREATOR_QUEUE,&msg_ptr->TASK_DATA); // todo: maybe actually send a return value lmao :)
 
-		// Reply to Task Creator w message
-		if (!_msgq_send(creator_reply_msg_ptr)) {
-			printf("\nCould not send a message\n");
-			_task_block();
-		}
 		// Free msg_ptr
 		_msg_free(msg_ptr);
 	}
@@ -132,8 +120,8 @@ void generator_task(os_task_param_t task_init_data)
 	prntln("generator_task");
 	printf("%s", "coltong");
 	// Create a Active task-list and an Overdue task list (empty)
-	TASK_LIST_PTR active_tasks_head_ptr  = NULL;
-	TASK_LIST_PTR overdue_tasks_head_ptr = NULL;
+	//TASK_LIST_PTR active_tasks_head_ptr  = NULL;
+	//TASK_LIST_PTR overdue_tasks_head_ptr = NULL;
 	dd_tcreate(DD_USER_TASK, 200);
 	_task_block();
 	while (1) {
@@ -191,9 +179,9 @@ void idle_task(os_task_param_t task_init_data)
 void user_task(os_task_param_t task_init_data)
 {
 	prntln("user_task");
-	out_red_light();
+	//out_red_light();
 	OSA_TimeDelay(400);
-	out_green_light();
+	//out_green_light();
 	while (1) {
 
 	}
