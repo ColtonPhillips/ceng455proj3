@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="ExternalProjectImportWizard">
+		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\Freescale\KSDK_1.3.0\examples\frdmk64f\demo_apps\bubble_level_ftm\kds"/>
+			<item value="C:\Freescale\KSDK_1.3.0\examples\frdmk64f\driver_examples\rtc\kds"/>
+			<item value="C:\Freescale\KSDK_1.3.0\examples\frdmk64f\driver_examples\gpio\kds"/>
+			<item value="C:\Freescale\KSDK_1.3.0\examples\frdmk64f\demo_apps\hello_world\kds"/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value=""/>
+		</list>
+	</section>
+	<section name="CleanDialogSettings">
+		<item value="500" key="DIALOG_WIDTH"/>
+		<item value="241" key="DIALOG_Y_ORIGIN"/>
+		<item value="390" key="DIALOG_X_ORIGIN"/>
+		<item value="377" key="DIALOG_HEIGHT"/>
+		<item value="true" key="TOGGLE_SELECTED"/>
+	</section>
+</section>

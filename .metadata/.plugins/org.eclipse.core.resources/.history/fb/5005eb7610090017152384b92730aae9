@@ -1,0 +1,40 @@
+/*
+ * access_functions.h
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_ACCESS_FUNCTIONS_H_
+#define SOURCES_ACCESS_FUNCTIONS_H_
+
+#include "mqx.h"
+
+typedef struct task_list {
+	uint_32 tid;
+	uint_32 deadline;
+	uint_32 task_type;
+	uint_32 creation_time;
+	struct task_list *next_cell;
+	struct task_list *previous_cell;
+} TASK_LIST, * TASK_LIST_PTR;
+
+_task_id dd_tcreate(unsigned int template_index, unsigned int deadline) {
+	return 1;
+}
+
+unsigned int dd_delete(unsigned int task_id) {
+	return 1;
+}
+
+unsigned int dd_return_active_list(TASK_LIST ** active_tasks_head_ptr) {
+	return 1;
+}
+
+unsigned int dd_return_overdue_list(TASK_LIST ** overdue_tasks_head_ptr) {
+	return 1;
+}
+
+
+
+#endif /* SOURCES_ACCESS_FUNCTIONS_H_ */

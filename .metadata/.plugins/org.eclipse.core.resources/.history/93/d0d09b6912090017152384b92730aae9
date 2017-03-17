@@ -1,0 +1,13 @@
+/*
+ * MessagePool.h
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_MESSAGEPOOL_H_
+#define SOURCES_MESSAGEPOOL_H_
+
+void init_message_pool();
+
+#endif /* SOURCES_MESSAGEPOOL_H_ */

@@ -1,0 +1,14 @@
+/*
+ * Queues.h
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_QUEUES_H_
+#define SOURCES_QUEUES_H_
+
+const int TASK_CREATOR_QUEUE = 0;
+const int DD_QUEUE = 0;
+
+#endif /* SOURCES_QUEUES_H_ */

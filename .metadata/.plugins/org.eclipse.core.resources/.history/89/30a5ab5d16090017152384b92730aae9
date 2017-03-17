@@ -1,0 +1,14 @@
+/*
+ * Queues.c
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+
+#include "Queues.h"
+
+
+void init_queues() {
+
+}

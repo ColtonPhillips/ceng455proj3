@@ -1,0 +1,21 @@
+/*
+ * MessagePool.h
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_MESSAGEPOOL_H_
+#define SOURCES_MESSAGEPOOL_H_
+#include "mqx.h"
+#include <>message.h>
+
+_pool_id message_pool;
+void init_message_pool();
+typedef struct my_messsage
+{
+	MESSAGE_HEADER_STRUCT HEADER;
+	_task_id TASK_ID;
+} MESSAGE, * MESSAGE_PTR;
+
+#endif /* SOURCES_MESSAGEPOOL_H_ */

@@ -1,0 +1,29 @@
+/*
+ * MessagePool.h
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_MESSAGEPOOL_H_
+#define SOURCES_MESSAGEPOOL_H_
+#include <mqx.h>
+#include <message.h>
+
+const int TASK_CREATOR_QUEUE = 0;
+const int DD_QUEUE = 1;
+
+_pool_id message_pool;
+_queue_id dd_qid;
+
+void init_message_pool();
+_queue_id qopen();
+
+typedef struct my_messsage
+{
+	MESSAGE_HEADER_STRUCT HEADER;
+	_task_id TASK_ID;
+} MESSAGE, * MESSAGE_PTR;
+
+
+#endif /* SOURCES_MESSAGEPOOL_H_ */

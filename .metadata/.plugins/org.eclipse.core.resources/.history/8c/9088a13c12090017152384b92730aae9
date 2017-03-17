@@ -1,0 +1,18 @@
+/*
+ * MessagePool.c
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+#include "MessagePool.h"
+#include "mqx.h"
+void init_message_pool() {
+	/* create a message pool */
+	   message_pool = _msgpool_create(sizeof(MESSAGE),
+		  50, 0, 0);
+	   if (message_pool == MSGPOOL_NULL_POOL_ID) {
+		  printf("\nCould not create a handler message pool\n");
+		  _task_block();
+	   }
+}
+

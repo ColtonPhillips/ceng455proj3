@@ -1,0 +1,53 @@
+/*
+ * access_functions.c
+ *
+ *  Created on: Mar 14, 2017
+ *      Author: coltonp
+ */
+
+#include "access_functions.h"
+#include "MessagePool.h"
+//#include "Queues.h"
+
+
+
+_task_id dd_tcreate(unsigned int template_index, unsigned int deadline) {
+    // Open an message queue
+	//_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
+	_task_id this_task_id = _task_create(0,template_index,deadline);
+	int priority = _sched_get_min_priority(0);
+	_task_set_priority(this_task_id,0,&priority);
+
+	// Allocate a message
+	MESSAGE_PTR create_task_msg_ptr = (MESSAGE_PTR)_msg_alloc(message_pool);
+	if (create_task_msg_ptr == NULL) {
+	 printf("\nCould not allocate a message\n");
+	 _task_block();
+	}
+	// Populate a message
+	create_task_msg_ptr->HEADER.SOURCE_QID = 0;
+	create_task_msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, 1);
+	create_task_msg_ptr->HEADER.SIZE = sizeof(MESSAGE_HEADER_STRUCT) + size(_task_id);
+	create_task_msg_ptr->TASK_ID = this_task_id;
+
+	// Send the message
+	if (!_msgq_send(create_task_msg_ptr)) {
+		printf("\nCould not send a message\n");
+		_task_block();
+	}
+
+
+	return 1;
+}
+
+unsigned int dd_delete(unsigned int task_id) {
+	return 1;
+}
+
+unsigned int dd_return_active_list(TASK_LIST ** active_tasks_head_ptr) {
+	return 1;
+}
+
+unsigned int dd_return_overdue_list(TASK_LIST ** overdue_tasks_head_ptr) {
+	return 1;
+}
