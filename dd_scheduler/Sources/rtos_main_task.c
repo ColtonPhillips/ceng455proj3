@@ -81,18 +81,14 @@ void main_task(os_task_param_t task_init_data)
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
   PEX_components_init(); 
 #endif 
-
+  	printf("\x1B[H\x1B[J");
+  	println("Main Task Begins:");
   	init_main_task();
   	out_kill_lights();
-  	//_task_create(0,DD_IDLE_TASK,0);
-  	//_task_create(0,DD_SCHEDULER_TASK,0);
-  	//_task_create(0,DD_MONITOR_TASK,0);
   	_task_create(0,DD_GENERATOR_TASK,0);
-
+  	_task_create(0,DD_SCHEDULER_TASK,0);
+ 	 println("Main Task Ends:");
   	_task_abort(_task_get_id());
-	while (1) {
-
-	}
 }
 
 /* END rtos_main_task */

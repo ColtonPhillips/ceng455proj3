@@ -7,7 +7,7 @@
 **     Version     : Component 1.3.0, Driver 01.00, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-14, 20:06, # CodeGen: 17
+**     Date/Time   : 2017-03-17, 17:40, # CodeGen: 21
 **     Contents    :
 **         Init - osa_status_t DD_Generator_Init(void);
 **
@@ -64,7 +64,7 @@
 /* DD_Generator task name */  
 #define DD_GENERATOR_TASK_NAME         "dd_generator"
 /* DD_Generator task stack size */  
-#define DD_GENERATOR_TASK_STACK_SIZE   1024U
+#define DD_GENERATOR_TASK_STACK_SIZE   30000U
 /* DD_Generator task priority value */  
 #define DD_GENERATOR_TASK_PRIORITY     12U
 /*

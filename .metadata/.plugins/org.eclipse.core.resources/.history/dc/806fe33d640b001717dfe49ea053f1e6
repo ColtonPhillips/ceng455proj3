@@ -1,0 +1,220 @@
+/* ###################################################################
+**     Filename    : os_tasks.c
+**     Project     : dd_scheduler
+**     Processor   : MK64FN1M0VLL12
+**     Component   : Events
+**     Version     : Driver 01.00
+**     Compiler    : GNU C Compiler
+**     Date/Time   : 2017-03-08, 14:24, # CodeGen: 1
+**     Abstract    :
+**         This is user's event module.
+**         Put your event handler code here.
+**     Settings    :
+**     Contents    :
+**         dd_scheduler_task - void dd_scheduler_task(os_task_param_t task_init_data);
+**
+** ###################################################################*/
+/*!
+** @file os_tasks.c
+** @version 01.00
+** @brief
+**         This is user's event module.
+**         Put your event handler code here.
+*/         
+/*!
+**  @addtogroup os_tasks_module os_tasks module documentation
+**  @{
+*/         
+/* MODULE os_tasks */
+
+#include "Cpu.h"
+#include "Events.h"
+#include "rtos_main_task.h"
+#include "os_tasks.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+
+
+/* User includes (#include below this line is not maintained by Processor Expert) */
+#include "helper_function.h"
+#include "access_functions.h"
+#include "MessagePool.h"
+#include "RGB.h"
+/*
+** ===================================================================
+**     Callback    : dd_scheduler_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+
+	const int TASK_ARRAY_SIZE = 1024;
+	const int NO_TASK = 0;
+	void insertIntoTaskList(TASK_NODE_PTR * task_list_array, TASK_NODE insertedTask) {
+	 	println("Insert Into Task List");
+		// todo: keep track of length of list being used.
+		int i = 0;
+		for (i = 0; i < TASK_ARRAY_SIZE; i++) {
+			if (task_list_array[i]->deadline == NO_TASK) {
+				// insert it here
+				*task_list_array[i] = insertedTask;
+			}
+		}
+	}
+
+TASK_NODE_PTR getEarliestDeadline(TASK_NODE_PTR * task_list_array) {
+	println("Get Earliest Deadline");
+	unsigned int DL = 999999999;
+	TASK_NODE_PTR EDF_PTR = NULL;
+	int i = 0;
+	for (i = 0; i < TASK_ARRAY_SIZE; i++) {
+		if (task_list_array[i]->deadline < DL && task_list_array[i]->deadline != NO_TASK) {
+			DL = task_list_array[i]->deadline;
+			EDF_PTR = task_list_array[i];
+		}
+	}
+	return EDF_PTR;
+}
+
+void dd_scheduler_task(os_task_param_t task_init_data)
+{
+	println("dd_scheduler_task begins");
+	   // Open a Q for the DDscheduler to use
+	   	_dd_qid = qopen(DD_QUEUE);
+	// Create an empty task List array
+	TASK_NODE_PTR  task_list_array[TASK_ARRAY_SIZE];
+	// Set the entire array of structs' deadlines to zero.
+	int i = 0;
+	for (i = 0; i < TASK_ARRAY_SIZE; i++) {
+		task_list_array[i]->deadline = NO_TASK;
+	}
+
+	TASK_NODE_PTR earliestDeadlineTask = NULL;//taskListFactory(0,0,0,0);
+
+	// The Main Task initializes this task.
+	// Q is already available! dd_qid (DD_QUEUE) init'd in Main Task
+	while (1) {
+		// Wait for Any Message
+		MESSAGE_PTR msg_ptr = msgreceive(MSGQ_ANY_QUEUE);
+
+		// Switch on the message
+		if (msgtarget_equals_q(msg_ptr,DD_QUEUE)) {
+
+			printlnU(msg_ptr->DATA);
+
+			// put into the task list
+			insertIntoTaskList(task_list_array, msg_ptr->TASK_DATA);
+
+			// Get Earliest Deadline
+			earliestDeadlineTask = getEarliestDeadline(task_list_array);
+
+			// Allocate a message, populate it, and send
+			msgpushtask(
+				TASK_CREATOR_QUEUE,
+				DD_QUEUE,
+				&msg_ptr->TASK_DATA,
+				(unsigned char *)"");
+
+			// Free msg_ptr
+			_msg_free(msg_ptr);
+		}
+
+	}
+	println("dd_scheduler_task ends");
+	_task_block();
+}
+
+/*
+** ===================================================================
+**     Callback    : generator_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+void generator_task(os_task_param_t task_init_data)
+{
+	println("generator_task begins");
+	// Create a Active task-list and an Overdue task list (empty)
+	//TASK_LIST_PTR active_tasks_head_ptr  = NULL;
+	//TASK_LIST_PTR overdue_tasks_head_ptr = NULL;
+	dd_tcreate(DD_USER_TASK, 200);
+	println("generator_task begins");
+	_task_block();
+}
+
+/*
+** ===================================================================
+**     Callback    : monitor_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+void monitor_task(os_task_param_t task_init_data)
+{
+	println("monitor_task begins");
+	println("monitor_task ends");
+	_task_block();
+}
+
+/*
+** ===================================================================
+**     Callback    : idle_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+void idle_task(os_task_param_t task_init_data)
+{
+	println("idle_task begins");
+	println("idle_task ends");
+	_task_block();
+}
+
+/*
+** ===================================================================
+**     Callback    : user_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+void user_task(os_task_param_t task_init_data)
+{
+	println("user_task begins");
+	out_red_light();
+	OSA_TimeDelay(400);
+	out_green_light();
+
+	println("user_task begins");
+	_task_block();
+}
+
+/* END os_tasks */
+
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif 
+
+/*!
+** @}
+*/
+/*
+** ###################################################################
+**
+**     This file was created by Processor Expert 10.5 [05.21]
+**     for the Freescale Kinetis series of microcontrollers.
+**
+** ###################################################################
+*/

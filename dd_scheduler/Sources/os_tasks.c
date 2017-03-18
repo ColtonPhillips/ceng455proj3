@@ -53,56 +53,77 @@ extern "C" {
 ** ===================================================================
 */
 
-	const int TASK_ARRAY_SIZE = 1024;
-	const int NO_TASK = 0;
-	void insertIntoTaskList(TASK_LIST_PTR * task_list_array, TASK_LIST insertedTask) {
+#define TASK_ARRAY_SIZE 2
+#define NO_TASK 0
+
+	void insertIntoTaskList(TASK_NODE_PTR task_list_array, TASK_NODE insertedTask) {
+	 	//println("Insert Into Task List");
 		// todo: keep track of length of list being used.
 		int i = 0;
 		for (i = 0; i < TASK_ARRAY_SIZE; i++) {
-			if (task_list_array[i]->deadline == NO_TASK) {
+			if (task_list_array[i].deadline == NO_TASK) {
 				// insert it here
-				*task_list_array[i] = insertedTask;
+				task_list_array[i] = insertedTask;
 			}
 		}
 	}
 
-void dd_scheduler_task(os_task_param_t task_init_data)
-{
-	prntln("dd_scheduler_task");
-	// Create an empty task List array
-	TASK_LIST_PTR  task_list_array[TASK_ARRAY_SIZE];
-	// Set the entire array of structs' deadlines to zero.
+TASK_NODE_PTR getEarliestDeadline(TASK_NODE_PTR task_list_array) {
+	//println("Get Earliest Deadline");
+	unsigned int DL = 999999999;
+	TASK_NODE_PTR EDF_PTR = NULL;
 	int i = 0;
 	for (i = 0; i < TASK_ARRAY_SIZE; i++) {
-		task_list_array[i]->deadline = NO_TASK;
+		if (task_list_array[i].deadline < DL && task_list_array[i].deadline != NO_TASK) {
+			DL = task_list_array[i].deadline;
+			EDF_PTR = &task_list_array[i];
+		}
 	}
+	return EDF_PTR;
+}
+void dd_scheduler_task(os_task_param_t task_init_data)
+{
+//	println("dd_scheduler_task begins");
+	// Create an empty task List array
 
-	//TASK_LIST_PTR earliestDeadlineTask = NULL;
+	//_mem_create_pool()
+	TASK_NODE_PTR task_list_array = _mem_alloc(TASK_ARRAY_SIZE * sizeof(TASK_NODE));
+
+	// Set the entire array of structs' deadlines to zero.
+	int i;
+	for (i = 0; i < TASK_ARRAY_SIZE; i++) {
+		task_list_array[i].deadline = NO_TASK;
+	}
+	TASK_NODE_PTR earliestDeadlineTask = NULL;//taskListFactory(0,0,0,0);
 
 	// The Main Task initializes this task.
 	// Q is already available! dd_qid (DD_QUEUE) init'd in Main Task
-
-	// Wait for Any Message
-	MESSAGE_PTR msg_ptr = msgreceive(MSGQ_ANY_QUEUE);
-
-	// Switch on the message
-	if (msgtarget_equals_q(msg_ptr,DD_QUEUE)) {
-
-		// put into the task list
-		insertIntoTaskList(task_list_array, msg_ptr->TASK_DATA);
-
-		// Get Earliest Deadline
-		// earliestDeadlineTask = getEarliestDeadline(task_list_array);
-
-		// Allocate a message, populate it, and send
-		msgpush(TASK_CREATOR_QUEUE,&msg_ptr->TASK_DATA); // todo: maybe actually send a return value lmao :)
-
-		// Free msg_ptr
-		_msg_free(msg_ptr);
-	}
 	while (1) {
-	}
+		// Wait for Any Message
+		MESSAGE_PTR msg_ptr = msgreceive(DD_QUEUE);
+		// Switch on the message
+		if (msgsrc_equals_q(msg_ptr,TASK_CREATOR_QUEUE)) {
 
+			//println("dd_scheduler_task receives a message");
+			printf(msg_ptr->DATA);
+
+			// put into the task list
+			insertIntoTaskList(task_list_array, msg_ptr->TASK_DATA);
+
+			// Get Earliest Deadline
+			earliestDeadlineTask = getEarliestDeadline(task_list_array);
+			// Free msg_ptr
+			_msg_free(msg_ptr);
+
+			// Allocate a message, populate it, and send
+			msgpushdata(
+				DD_QUEUE,
+				TASK_CREATOR_QUEUE,
+				(unsigned char *)"MSG REPLIED \n");
+		}
+
+	}
+	println("dd_scheduler_task ends");
 	_task_block();
 }
 
@@ -117,17 +138,12 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 */
 void generator_task(os_task_param_t task_init_data)
 {
-	prntln("generator_task");
-	printf("%s", "coltong");
+	println("generator_task begins");
 	// Create a Active task-list and an Overdue task list (empty)
 	//TASK_LIST_PTR active_tasks_head_ptr  = NULL;
 	//TASK_LIST_PTR overdue_tasks_head_ptr = NULL;
 	dd_tcreate(DD_USER_TASK, 200);
-	_task_block();
-	while (1) {
-
-	}
-
+	println("generator_task ends");
 	_task_block();
 }
 
@@ -142,10 +158,8 @@ void generator_task(os_task_param_t task_init_data)
 */
 void monitor_task(os_task_param_t task_init_data)
 {
-	prntln("monitor_task");
-	while (1) {
-	}
-
+	println("monitor_task begins");
+	println("monitor_task ends");
 	_task_block();
 }
 
@@ -160,10 +174,8 @@ void monitor_task(os_task_param_t task_init_data)
 */
 void idle_task(os_task_param_t task_init_data)
 {
-	prntln("idle_task");
-	while (1) {
-
-	}
+	println("idle_task begins");
+	println("idle_task ends");
 	_task_block();
 }
 
@@ -178,14 +190,12 @@ void idle_task(os_task_param_t task_init_data)
 */
 void user_task(os_task_param_t task_init_data)
 {
-	prntln("user_task");
-	out_red_light();
-	OSA_TimeDelay(400);
-	out_green_light();
-	while (1) {
+	println("user_task begins");
+	//out_red_light();
+	//OSA_TimeDelay(400);
+	//out_green_light();
 
-	}
-
+	println("user_task ends");
 	_task_block();
 }
 

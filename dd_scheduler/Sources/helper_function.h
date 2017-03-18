@@ -8,7 +8,8 @@
 #ifndef SOURCES_HELPER_FUNCTION_H_
 #define SOURCES_HELPER_FUNCTION_H_
 #include <stdbool.h>
-void prntln(char * str);
+void printlnU(unsigned char * str);
+void println(char * str);
 bool asrt(bool b);
 bool asrtmsg(char * str, bool b);
 void have_fun();

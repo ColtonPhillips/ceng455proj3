@@ -47,7 +47,8 @@ Sources/access_functions.o: ../Sources/access_functions.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  ../Sources/MessagePool.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h \
+ ../Sources/helper_function.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
@@ -146,3 +147,5 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h:
 ../Sources/MessagePool.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h:
+
+../Sources/helper_function.h:
