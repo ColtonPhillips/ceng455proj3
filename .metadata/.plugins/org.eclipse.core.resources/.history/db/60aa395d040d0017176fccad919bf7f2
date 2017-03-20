@@ -1,0 +1,34 @@
+/*
+ * Priority.h
+ *
+ *  Created on: Mar 19, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_PRIORITY_H_
+#define SOURCES_PRIORITY_H_
+
+#include "Cpu.h"
+#include "mqx_ksdk.h"
+
+_mqx_uint priorityget() {
+	_mqx_uint priority;
+	_mqx_uint RETURNCODE = _task_get_priority(_task_get_id(),&priority);
+	return PRIORITY_RTOS_TO_OSA(priority);
+}
+
+_mqx_uint priorityset(_mqx_uint newpriority) {
+	_mqx_uint oldpriority;
+	_mqx_uint RETURNCODE = _task_set_priority(_task_get_id(),PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);
+	printf("%d", PRIORITY_OSA_TO_RTOS(newpriority));
+	_mqx_uint newpriority = 0;
+		R = PRIORITY_OSA_TO_RTOS(_task_get_priority(_task_get_id(),&newpriority));
+		if (R == MQX_OK) {printf("OK\n");}
+		printf("\nnew:%d\n", (int)newpriority);
+}
+
+void abortme() {
+	_task_abort(_task_get_id());
+}
+
+#endif /* SOURCES_PRIORITY_H_ */

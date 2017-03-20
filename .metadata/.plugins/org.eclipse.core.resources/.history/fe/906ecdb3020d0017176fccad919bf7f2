@@ -1,0 +1,14 @@
+/*
+ * Priority.h
+ *
+ *  Created on: Mar 19, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_PRIORITY_H_
+#define SOURCES_PRIORITY_H_
+
+#include "Cpu.h"
+#include "mqx_ksdk.h"
+
+#endif /* SOURCES_PRIORITY_H_ */

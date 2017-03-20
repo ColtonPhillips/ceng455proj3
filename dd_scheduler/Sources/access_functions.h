@@ -30,14 +30,14 @@ It returns the task_id of the created task, or an error. The error is either an 
 DD-scheduler specific error (to be determined).
  *
  * */
-_task_id dd_tcreate(unsigned int template_index, unsigned int deadline);
+_task_id dd_tcreate(unsigned int template_index, unsigned int execution, unsigned int deadline);
 
 /*
  * When the function dd_delete is called, the specified task is deleted.
 This primitive deletes the task specified. It parallels the structure of the dd_tcreate as outlined above.
  *
  * */
-unsigned int dd_delete(unsigned int task_id);
+bool dd_delete(unsigned int task_id);
 
 /*
  * This primitive requests the DD-scheduler for the list of active tasks and returns this information to the

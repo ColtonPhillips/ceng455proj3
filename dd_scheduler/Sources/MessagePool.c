@@ -12,17 +12,18 @@ _queue_id qopen(_queue_number QNUMBER) {
 	_queue_id qid  = _msgq_open(QNUMBER, 0);
 	if (qid == 0) {
 	  printf("\nCould not open a private message queue\n");
-	  printf("%d\n",_task_get_error());
+	  printf("%d\n",(int)_task_get_error());
 	}
 	return qid;
 }
 
 // helper function to open a System Q
+// TODO: DELETE. use private q for DD only.
 _queue_id qsysopen(_queue_number QNUMBER) {
 	_queue_id qid  = _msgq_open_system(QNUMBER,80,0,0);
 	if (qid == 0) {
 	  printf("\nCould not open a system message queue\n");
-	  printf("%d\n",_task_get_error());
+	  printf("%d\n",(int)_task_get_error());
 	  _task_block();
 	}
 	return qid;
@@ -38,7 +39,7 @@ MESSAGE_PTR msgalloc() {
 	return msg_ptr;
 }
 
-/* create a message pool and */
+/* create a message pool */
 void init_message_pool() {
 	   message_pool = _msgpool_create(sizeof(MESSAGE),
 		  80, 0, 0);
@@ -46,9 +47,6 @@ void init_message_pool() {
 		  printf("\nCould not create a message pool\n");
 		  _task_block();
 	   }
-
-	   // Open a Q for the DDscheduler to use
-	   	dd_qid = qsysopen(DD_QUEUE);
 }
 
 // returns a task list pointer but probably leaks memory
@@ -70,7 +68,7 @@ TASK_NODE taskListFactory(
 void msgsend(MESSAGE_PTR msg_ptr) {
 	if (!_msgq_send(msg_ptr)) {
 		printf("\nCould not send a message\n");
-		printf("%d\n",_task_get_error());
+		printf("%d\n",(int)_task_get_error());
 		_task_block();
 	}
 }
@@ -87,7 +85,7 @@ void msgpop(
 	msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
 	msg_ptr->HEADER.SIZE = sizeof(MESSAGE);
 	msg_ptr->TASK_DATA = task;
-	strcpy(msg_ptr->DATA, data);
+	strcpy(msg_ptr->DATA, (UCHAR_PTR)data);
 }
 
 // Push a message to the target qid
@@ -114,7 +112,7 @@ void msgpushdata(_queue_number qNumberSource, _queue_number qNumberTarget, unsig
 	msgpushtask(
 		qNumberSource,
 		qNumberTarget,
-		taskListFactory(0, 0, 0, _time_get_hwticks()),
+		taskListFactory(0, 0, 0, currentTime()),
 		data);
 }
 
@@ -123,11 +121,22 @@ MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), 0);
 	if (msg_ptr == NULL) {
 		printf("\nCould not receive a message\n");
-		printf("%d\n",_task_get_error());
+		printf("%d\n",(int)_task_get_error());
 		_task_block();
 	}
 	return msg_ptr;
 }
+
+MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
+	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), timeout);
+	if (msg_ptr == NULL) {
+		printf("\nCould not receive a timeout message\n");
+		printf("%d\n",(int)_task_get_error());
+		_task_block();
+	}
+	return msg_ptr;
+}
+
 
 // helper function to see if a msg ptr has same target qid as QTYPE
 bool msgtarget_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER) {

@@ -1,0 +1,20 @@
+/*
+ * helper_function.h
+ *
+ *  Created on: Mar 10, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_HELPER_FUNCTION_H_
+#define SOURCES_HELPER_FUNCTION_H_
+#include <stdbool.h>
+#include "RGB.h"
+#include <timer.h>
+#include <mqx.h>
+void printlnU(unsigned char * str);
+void println(char * str);
+bool asrt(bool b);
+bool asrtmsg(char * str, bool b);
+void have_fun();
+
+#endif /* SOURCES_HELPER_FUNCTION_H_ */

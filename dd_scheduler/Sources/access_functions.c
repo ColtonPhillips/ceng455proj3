@@ -8,34 +8,36 @@
 #include "access_functions.h"
 #include "MessagePool.h"
 #include "helper_function.h"
+#include "Priority.h"
+
+#define ACCESS_ERROR 0
+#define ACCESS_PASS 1
 
 _task_id dd_tcreate(
 		unsigned int template_index,
-		unsigned int deadline)
+		unsigned int execution,// in relative ms
+		unsigned int deadline) // in relative ms
 {
+ 	println("CrB");
 
- 	println("dd_tcreate begins:");
 	// Open a message queue
 	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
 
-	// Create a new task of the index and deadline
-	_task_id this_task_id = _task_create(0,template_index,deadline);
+	_task_id this_task_id = _task_create(0,template_index,execution);
 
-	// Set task priority to that of the minimum (25?) (24?)
-	_mqx_uint priority = _task_get_priority(this_task_id,&priority);
-	unsigned int newpriority = _sched_get_min_priority(0);
-	_task_set_priority(this_task_id,newpriority,&priority);
+	// Set user task priority to that of the minimum (25)
+	priorityset(25);
 
 	// Allocate, populate and send a msg
 	msgpushtask(
-			TASK_CREATOR_QUEUE,
-			DD_QUEUE,
-			taskListFactory(
+			TASK_CREATOR_QUEUE, // src
+			DD_QUEUE,			// target
+			taskListFactory(	// the new task
 				this_task_id,
 				deadline,
 				template_index,
-				_time_get_hwticks()),
-			(unsigned char *)"TASK CREATED\n");
+				currentTime()),
+			(unsigned char *)"CREATE?\n"); // The Data
 
 	// Wait for reply at the q above
 	MESSAGE_PTR msg_ptr = msgreceive(TASK_CREATOR_QUEUE);
@@ -43,22 +45,39 @@ _task_id dd_tcreate(
 	// Destroy the Q
 	_msgq_close(creator_qid);
 
-	// use the message (check for error?)
-	printf(msg_ptr->DATA);
+	// print the message
+	printf((UCHAR_PTR)msg_ptr->DATA);
+
+	bool taskAdded = false;
+	if (strcmp(msg_ptr->DATA, TaskCreatedString) == 0) {
+		taskAdded = true;
+	}
+
 	// free the message
 	_msg_free(msg_ptr);
 
- 	println("dd_tcreate ends:");
-	//Returns to the invoking task (todo errors)
+ 	println("CreE");
+	//Returns taskID of created task if task actually added to DD scheduler otherwise error.
+ 	if (!taskAdded) return ACCESS_ERROR;
 	return this_task_id;
 }
 
-unsigned int dd_delete(unsigned int task_id) {
+bool dd_delete(unsigned int task_id) {
+ 	println("DelB");
+
 	// Open a message queue
 	_queue_id deletor_qid  = qopen(TASK_DELETOR_QUEUE);
 
 	// Allocate, populate and send a msg
-	//msgpush(DD_QUEUE, taskListFactory(DD_QUEUE, this_task_id, deadline, template_index, _time_get_hwticks()));
+	msgpushtask(
+			TASK_DELETOR_QUEUE, // src
+			DD_QUEUE,			// target
+			taskListFactory(	// the new task
+				task_id,
+				0,
+				0,
+				0),
+			(unsigned char *)"DELETE?\n"); // The Data
 
 	// Wait for reply at the q above
 	MESSAGE_PTR msg_ptr = msgreceive(TASK_DELETOR_QUEUE);
@@ -66,13 +85,23 @@ unsigned int dd_delete(unsigned int task_id) {
 	// Destroy the Q
 	_msgq_close(deletor_qid);
 
-	// use the message (check for error?)
+	// use the message and check for error
+	printf((UCHAR_PTR)msg_ptr->DATA);
+
+	bool taskDeleted = false;
+	if (strcmp(msg_ptr->DATA, TaskDeletedString) == 0) {
+		taskDeleted = true;
+	}
 
 	// free the message
 	_msg_free(msg_ptr);
 
 	//Returns error (task not deleted or found) or no error (task deleted)
-	return 1;
+ 	println("DelE");
+
+	//Returns true or false if the task actually deleted from the DD scheduler
+ 	if (!taskDeleted) return ACCESS_ERROR;
+	return ACCESS_PASS;
 }
 
 unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr) {

@@ -4,12 +4,16 @@
 		<item value="960" key="dialogWidth"/>
 		<item value="718" key="dialogHeight"/>
 		<list key="orderedProviders">
+			<item value="org.eclipse.ui.editors"/>
 		</list>
 		<list key="textArray">
+			<item value="access"/>
 		</list>
 		<list key="orderedElements">
+			<item value="org.eclipse.cdt.ui.editor.CEditordd_scheduler/Sources/access_functions.c"/>
 		</list>
 		<list key="textEntries">
+			<item value="1"/>
 		</list>
 	</section>
 	<section name="WorkbenchPreferenceDialogSettings">

@@ -1,0 +1,25 @@
+/*
+ * Priority.h
+ *
+ *  Created on: Mar 19, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_PRIORITY_H_
+#define SOURCES_PRIORITY_H_
+
+#include "Cpu.h"
+#include "mqx_ksdk.h"
+
+_mqx_uint prioritygetmy() {
+	_mqx_uint priority;
+	_mqx_uint RETURNCODE = _task_get_priority(_task_get_id(),&priority);
+	printf("%d\n",priority);
+	return PRIORITY_RTOS_TO_OSA(priority);
+}
+
+void abortme() {
+	_task_abort(_task_get_id());
+}
+
+#endif /* SOURCES_PRIORITY_H_ */

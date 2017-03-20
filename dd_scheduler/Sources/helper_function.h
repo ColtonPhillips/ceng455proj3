@@ -8,6 +8,8 @@
 #ifndef SOURCES_HELPER_FUNCTION_H_
 #define SOURCES_HELPER_FUNCTION_H_
 #include <stdbool.h>
+#include "RGB.h"
+#include <mqx.h>
 void printlnU(unsigned char * str);
 void println(char * str);
 bool asrt(bool b);

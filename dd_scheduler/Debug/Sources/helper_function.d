@@ -1,6 +1,6 @@
 Sources/helper_function.o: ../Sources/helper_function.c \
  C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
- ../Sources/helper_function.h ../Sources/BTN.h \
+ ../Sources/helper_function.h ../Sources/RGB.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
  C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/mcu/mqx_sdk_config.h \
@@ -33,6 +33,7 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/kinetis_mpu.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/cortex.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem.h \
+ ../Sources/BTN.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
@@ -51,7 +52,7 @@ C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 ../Sources/helper_function.h:
 
-../Sources/BTN.h:
+../Sources/RGB.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h:
 
@@ -116,6 +117,8 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/kinetis_mpu
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/cortex.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem.h:
+
+../Sources/BTN.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
 

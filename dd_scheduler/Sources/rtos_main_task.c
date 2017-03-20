@@ -58,6 +58,7 @@ extern void PEX_components_init(void);
 ** ===================================================================
 */
 
+// helper function
 void init_main_task() {
 	init_GPIO(); // init the input and output gpios
 	init_buttons(); // init the 2 buttons
@@ -66,13 +67,13 @@ void init_main_task() {
 }
 
 /*
- * Priority Order:
- * 8 MAINTASK_TASK ???
- * 9  DD_GENERATOR_TASK
- * 10 DD_SCHEDULER_TASK
- * 20 DD_USER_TASK
- * 30 DD_IDLE_TASK
- * 40 DD_MONITOR_TASK
+ * STARTING Priority: (change over time)
+ * 10 MAINTASK_TASK
+ * 11 DD_SCHEDULER_TASK
+ * 12 DD_GENERATOR_TASK
+ * 18 DD_USER_TASK
+ * 21 DD_IDLE_TASK
+ * 24 DD_MONITOR_TASK
 */
 
 void main_task(os_task_param_t task_init_data)
@@ -81,14 +82,17 @@ void main_task(os_task_param_t task_init_data)
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
   PEX_components_init(); 
 #endif 
-  	printf("\x1B[H\x1B[J");
-  	println("Main Task Begins:");
+  	printf("\x1B[H\x1B[J"); // clear print window
+  	println("MTB");
   	init_main_task();
   	out_kill_lights();
   	_task_create(0,DD_GENERATOR_TASK,0);
   	_task_create(0,DD_SCHEDULER_TASK,0);
- 	 println("Main Task Ends:");
+  	_task_create(0,DD_IDLE_TASK,0);
+ 	 println("MTE");
   	_task_abort(_task_get_id());
+  	// After task aborts, Scheduler runs long enough to create a system q,
+  	// then it changes it's priority, so Generator gets a chance to run.
 }
 
 /* END rtos_main_task */
