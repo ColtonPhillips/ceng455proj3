@@ -19,7 +19,7 @@ void printlnU(unsigned char * str) {
 
 void println(char * str) {
 #ifndef NOPRINT
-	printf("%s\n",str);
+	printf("%s\n",(unsigned char * )str);
 #endif
 }
 

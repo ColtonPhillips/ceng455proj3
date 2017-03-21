@@ -1,11 +1,11 @@
-22:19:37 **** Incremental Build of configuration Debug for project dd_scheduler ****
+21:02:14 **** Incremental Build of configuration Debug for project dd_scheduler ****
 make all 
 Invoking: Cross ARM GNU Print Size
 arm-none-eabi-size --format=berkeley "dd_scheduler.elf"
    text	   data	    bss	    dec	    hex	filename
-  70984	   2288	   3484	  76756	  12bd4	dd_scheduler.elf
+  71468	   2288	   3484	  77240	  12db8	dd_scheduler.elf
 Finished building: dd_scheduler.siz
  
 
-22:19:38 Build Finished (took 1s.95ms)
+21:02:15 Build Finished (took 1s.194ms)
 

@@ -127,13 +127,16 @@ MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 	return msg_ptr;
 }
 
+// Timesout with ms as timeout argument
 MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
 	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), timeout);
 	if (msg_ptr == NULL) {
-		printf("\nCould not receive a timeout message\n");
-		printf("%d\n",(int)_task_get_error());
-		_task_block();
+		//printf("\nCould not receive a timeout message\n");
+		//printf("%d\n",(int)_task_get_error());
+		//_task_block();
+		println("MSGNULL");
 	}
+	// returns null if a timeout occurs or if a error occurs.
 	return msg_ptr;
 }
 

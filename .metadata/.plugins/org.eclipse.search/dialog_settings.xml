@@ -33,7 +33,7 @@
 		<item value="1000" key="org.eclipse.search.resultpage.limit"/>
 	</section>
 	<section name="SearchDialog">
-		<item value="org.eclipse.search.internal.ui.text.TextSearchPage" key="PREVIOUS_PAGE"/>
+		<item value="org.eclipse.cdt.ui.pdomSearchPage" key="PREVIOUS_PAGE"/>
 	</section>
 	<section name="org.eclipse.cdt.ui.pdomSearchViewPage">
 		<item value="true" key="showEnclosingDefinitions"/>
@@ -51,7 +51,7 @@
 		<item value="12" key="HISTORY_SIZE"/>
 		<section name="HISTORY11">
 			<item value="false" key="isRegExSearch"/>
-			<item value="dd_scheduler_task begins" key="textPattern"/>
+			<item value="messuage" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
@@ -63,9 +63,9 @@
 		</section>
 		<section name="HISTORY2">
 			<item value="false" key="isRegExSearch"/>
-			<item value="Could not receive a message" key="textPattern"/>
+			<item value="priorityset(" key="textPattern"/>
 			<item value="0" key="scope"/>
-			<item value="true" key="ignoreCase"/>
+			<item value="false" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
 			<list key="fileNamePatterns">
 				<item value="*"/>
@@ -78,9 +78,9 @@
 		</section>
 		<section name="HISTORY3">
 			<item value="false" key="isRegExSearch"/>
-			<item value="qopen" key="textPattern"/>
+			<item value="C_B" key="textPattern"/>
 			<item value="0" key="scope"/>
-			<item value="true" key="ignoreCase"/>
+			<item value="false" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
 			<list key="fileNamePatterns">
 				<item value="*"/>
@@ -90,7 +90,7 @@
 		</section>
 		<section name="HISTORY0">
 			<item value="false" key="isRegExSearch"/>
-			<item value="CREATE?\n" key="textPattern"/>
+			<item value="refreshEarliestDeadlineTask" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="false" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
@@ -102,7 +102,7 @@
 		</section>
 		<section name="HISTORY10">
 			<item value="false" key="isRegExSearch"/>
-			<item value="taskList" key="textPattern"/>
+			<item value="Could not receive" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
@@ -114,9 +114,9 @@
 		</section>
 		<section name="HISTORY1">
 			<item value="false" key="isRegExSearch"/>
-			<item value="CREATE?" key="textPattern"/>
+			<item value="prioritysettask" key="textPattern"/>
 			<item value="0" key="scope"/>
-			<item value="true" key="ignoreCase"/>
+			<item value="false" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
 			<list key="fileNamePatterns">
 				<item value="*"/>
@@ -125,30 +125,6 @@
 			</list>
 		</section>
 		<section name="HISTORY9">
-			<item value="false" key="isRegExSearch"/>
-			<item value="TASK_NODE_PTR" key="textPattern"/>
-			<item value="0" key="scope"/>
-			<item value="true" key="ignoreCase"/>
-			<item value="false" key="isWholeWord"/>
-			<list key="fileNamePatterns">
-				<item value="*"/>
-			</list>
-			<list key="workingSets">
-			</list>
-		</section>
-		<section name="HISTORY8">
-			<item value="false" key="isRegExSearch"/>
-			<item value="generator_task begins" key="textPattern"/>
-			<item value="0" key="scope"/>
-			<item value="true" key="ignoreCase"/>
-			<item value="false" key="isWholeWord"/>
-			<list key="fileNamePatterns">
-				<item value="*"/>
-			</list>
-			<list key="workingSets">
-			</list>
-		</section>
-		<section name="HISTORY5">
 			<item value="false" key="isRegExSearch"/>
 			<item value="msgreceive" key="textPattern"/>
 			<item value="0" key="scope"/>
@@ -160,7 +136,7 @@
 			<list key="workingSets">
 			</list>
 		</section>
-		<section name="HISTORY4">
+		<section name="HISTORY8">
 			<item value="false" key="isRegExSearch"/>
 			<item value="private message q" key="textPattern"/>
 			<item value="0" key="scope"/>
@@ -172,9 +148,33 @@
 			<list key="workingSets">
 			</list>
 		</section>
+		<section name="HISTORY5">
+			<item value="false" key="isRegExSearch"/>
+			<item value="CREATE?" key="textPattern"/>
+			<item value="0" key="scope"/>
+			<item value="true" key="ignoreCase"/>
+			<item value="false" key="isWholeWord"/>
+			<list key="fileNamePatterns">
+				<item value="*"/>
+			</list>
+			<list key="workingSets">
+			</list>
+		</section>
+		<section name="HISTORY4">
+			<item value="false" key="isRegExSearch"/>
+			<item value="CREATE?\n" key="textPattern"/>
+			<item value="0" key="scope"/>
+			<item value="false" key="ignoreCase"/>
+			<item value="false" key="isWholeWord"/>
+			<list key="fileNamePatterns">
+				<item value="*"/>
+			</list>
+			<list key="workingSets">
+			</list>
+		</section>
 		<section name="HISTORY7">
 			<item value="false" key="isRegExSearch"/>
-			<item value="messuage" key="textPattern"/>
+			<item value="qopen" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>
@@ -186,7 +186,7 @@
 		</section>
 		<section name="HISTORY6">
 			<item value="false" key="isRegExSearch"/>
-			<item value="Could not receive" key="textPattern"/>
+			<item value="Could not receive a message" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<item value="false" key="isWholeWord"/>

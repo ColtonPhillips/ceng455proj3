@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="msg_ptr" key="selection"/>
+		<item value="refreshEarliestDeadlineTask" key="selection"/>
 		<list key="findhistory">
+			<item value="refreshEarliestDeadlineTask"/>
+			<item value="C_B"/>
 			<item value="msg_ptr"/>
 			<item value="comput"/>
 			<item value="private"/>
 			<item value="msg"/>
 			<item value="messuage"/>
 			<item value="TASK_TEMPLATE"/>
-			<item value="init_g"/>
-			<item value="gpio_in"/>
 		</list>
 		<list key="replacehistory">
 		</list>

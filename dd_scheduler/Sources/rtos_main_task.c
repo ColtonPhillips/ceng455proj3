@@ -82,6 +82,7 @@ void main_task(os_task_param_t task_init_data)
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
   PEX_components_init(); 
 #endif 
+  // ASK SAMAN WHEN THE EARLIEST IS KAM CAN SHOW UP
   	printf("\x1B[H\x1B[J"); // clear print window
   	println("MTB");
   	init_main_task();

@@ -18,15 +18,14 @@ _task_id dd_tcreate(
 		unsigned int execution,// in relative ms
 		unsigned int deadline) // in relative ms
 {
- 	println("CrB");
-
+	println("CrB");
 	// Open a message queue
 	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
 
 	_task_id this_task_id = _task_create(0,template_index,execution);
 
 	// Set user task priority to that of the minimum (25)
-	priorityset(25);
+	prioritysettask(this_task_id,25);
 
 	// Allocate, populate and send a msg
 	msgpushtask(
@@ -34,10 +33,10 @@ _task_id dd_tcreate(
 			DD_QUEUE,			// target
 			taskListFactory(	// the new task
 				this_task_id,
-				deadline,
+				deadline, // relative
 				template_index,
-				currentTime()),
-			(unsigned char *)"CREATE?\n"); // The Data
+				currentTime()), // creation time
+			(unsigned char *)"CR\n"); // The Data
 
 	// Wait for reply at the q above
 	MESSAGE_PTR msg_ptr = msgreceive(TASK_CREATOR_QUEUE);
@@ -46,7 +45,7 @@ _task_id dd_tcreate(
 	_msgq_close(creator_qid);
 
 	// print the message
-	printf((UCHAR_PTR)msg_ptr->DATA);
+	//printf((UCHAR_PTR)msg_ptr->DATA);
 
 	bool taskAdded = false;
 	if (strcmp(msg_ptr->DATA, TaskCreatedString) == 0) {

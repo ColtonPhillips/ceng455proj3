@@ -62,11 +62,22 @@ void timer_callback(_timer_id t, void* dataptr, unsigned int seconds, unsigned i
 }
 
 // CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
-void synthetic_compute(unsigned int ticks){
+void synthetic_compute_ticks(unsigned int ticks){
 	bool flag = true;
 	MQX_TICK_STRUCT Ticks;
 	_time_init_ticks(&Ticks, ticks);
-	_timer_start_oneshot_after_ticks(timer_callback, (void *) &flag, TIMER_KERNEL_TIME_MODE, &Ticks);
+	_timer_start_oneshot_after_ticks(timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
+
+	while (flag){}
+}
+
+// CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
+void synthetic_compute_ms(unsigned int ms){
+	bool flag = true;
+	MQX_TICK_STRUCT Ticks;
+	_time_init_ticks(&Ticks, 0);
+	_time_add_msec_to_ticks(&Ticks, ms);
+	_timer_start_oneshot_after_ticks(timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
 
 	while (flag){}
 }
@@ -112,18 +123,20 @@ bool deleteFromTaskList(TASK_NODE_PTR task_list_array, TASK_NODE Task) {
 }
 
 // Getting EDF task searches entire array therefore is O(n)
-void refreshEarliestDeadlineTask(TASK_NODE_PTR EDF_PTR, TASK_NODE_PTR task_list_array) {
+void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_array) {
 	unsigned int DL_min = 999999999; // sufficiently large enough number
-	EDF_PTR = NULL; // return false if the list is empty :)
+	*ppEDF = NULL; // return null if the task list is empty
 	int i = 0;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].deadline < DL_min && task_list_array[i].deadline != NO_TASK) {
 			DL_min = task_list_array[i].deadline;
-			EDF_PTR = &task_list_array[i];
-			println("this happens");
+			*ppEDF = (TASK_NODE_PTR) &(task_list_array[i]);
+			println("This Happens");
 		}
 	}
-	println(EDF_PTR->deadline);
+	if (*ppEDF != NULL) {
+		println((*ppEDF)->deadline);
+	}
 }
 
 // Set the entire array of structs' deadlines to zero.
@@ -165,8 +178,12 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 	while (1) {
 		// Wait for Any Message
+		println("DSLEEP");
 		MESSAGE_PTR msg_ptr = msgreceivetimeout(DD_QUEUE, deadlineTimeout);
-		println("DW");
+		println("DWAKE");
+		if (msg_ptr == NULL) {
+			printf("NULLMSG\n");
+		}
 
 		// Switch on the message's source
 
@@ -185,7 +202,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			println("TIMEOUT");
 			earliestDeadlineTask->deadline = NO_TASK;
 			_task_abort(earliestDeadlineTask->tid);
-			refreshEarliestDeadlineTask(earliestDeadlineTask, task_node_array);
+			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 			if (earliestDeadlineTask == NULL) {
 				deadlineTimeout = 0;
 			}
@@ -197,7 +214,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		else if (msgsrc_equals_q(msg_ptr,TASK_CREATOR_QUEUE)) {
 			// Create a task if possible
 
-			printf((UCHAR_PTR)msg_ptr->DATA);
+			//printf((UCHAR_PTR)msg_ptr->DATA);
 
 			// put into the task list
 			bool success = insertIntoTaskList(task_node_array, msg_ptr->TASK_DATA);
@@ -209,7 +226,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			TASK_NODE_PTR lastEDFTask = earliestDeadlineTask;
 
 			// Refresh EDF task
-			refreshEarliestDeadlineTask(earliestDeadlineTask, task_node_array);
+			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
 
 			// If it's added, lower the last task priority (to 25) (if there was one)
@@ -235,9 +252,11 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			if (earliestDeadlineTask != NULL) {
 				updateNodeWithRespectToTime(earliestDeadlineTask);
 				deadlineTimeout = earliestDeadlineTask->deadline;
+				out_kill_lights();
 			}
 			else {
 				deadlineTimeout = 0;
+				out_white_light();
 			}
 		}
 		else if (msgsrc_equals_q(msg_ptr,TASK_DELETOR_QUEUE)) {
@@ -251,7 +270,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			_msg_free(msg_ptr);
 
 			// Refresh EDF task
-			refreshEarliestDeadlineTask(earliestDeadlineTask, task_node_array);
+			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
 			// If it's deleted and the new EDF is not NULL, raise it's priority (18)
 			if (success && earliestDeadlineTask != NULL) {
@@ -292,16 +311,52 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 **     Returns : Nothing
 ** ===================================================================
 */
+#define TIMER_TASK_PRIORITY 2
+#define TIMER_STACK_SIZE 2000
+
+//#define WILL_CREATE_PERIODIC_TASKS
+#define PERIODIC_PERIOD 800
+#define PERIODIC_EXECUTION 400
+
+static void PeriodicallyAddTask(
+		_timer_id id,
+		void * data_ptr,
+		MQX_TICK_STRUCT_PTR tick_ptr) {
+	println("Periodic");
+
+	// Add a new task!
+	dd_tcreate(DD_USER_TASK, PERIODIC_EXECUTION, PERIODIC_PERIOD);
+
+	_time_init_ticks(&tick_ptr,0);
+	_time_add_msec_to_ticks(&tick_ptr,PERIODIC_PERIOD);
+	*(_timer_id * )data_ptr = _timer_start_periodic_every_ticks(PeriodicallyAddTask,0,TIMER_ELAPSED_TIME_MODE, &tick_ptr);
+}
+
 void generator_task(os_task_param_t task_init_data)
 {
 	// TODO: Don't naively generate tasks
+	// TODO: Create a timer for each periodic task
 	println("GB");
 	// Create a Active task-list and an Overdue task list (empty)
-	//TASK_LIST_PTR active_tasks_head_ptr  = NULL;
-	//TASK_LIST_PTR overdue_tasks_head_ptr = NULL;
-	//dd_tcreate(DD_USER_TASK, 40,  200);
-	//dd_tcreate(DD_USER_TASK, 100, 400);
-	dd_tcreate(DD_USER_TASK, 500, 800);
+	TASK_NODE_PTR active_tasks_head_ptr  = NULL;
+	TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
+
+	// Start off with some aperiodic user tasks
+	dd_tcreate(DD_USER_TASK, 1600, 400);
+	//dd_tcreate(DD_USER_TASK, 500, 800);
+	//dd_tcreate(DD_USER_TASK, 500, 800);
+
+
+#ifdef WILL_CREATE_PERIODIC_TASKS
+	// Create a Timer(s) for periodic tasks
+	MQX_TICK_STRUCT tick1;
+	_timer_id periodic_task_timer;
+	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
+	_time_init_ticks(&tick1, 0);
+	_time_add_msec_to_ticks(&tick1, PERIODIC_PERIOD);
+	periodic_task_timer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&periodic_task_timer,TIMER_ELAPSED_TIME_MODE, &tick1);
+#endif
+
 	println("GE");
 	abortme();
 }
@@ -355,7 +410,7 @@ void user_task(os_task_param_t task_init_data)
 {
 	println("UB");
 	unsigned int executionTime = (unsigned int) task_init_data;
-	synthetic_compute(executionTime);
+	synthetic_compute_ms(executionTime);
 	println("UE");
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("DELETE FAILED");}
