@@ -14,18 +14,18 @@
 // These functions handle the OSA VS RTOS offset and are thusly handy
 _mqx_uint priorityget() {
 	_mqx_uint priority;
-	_mqx_uint RETURNCODE = _task_get_priority(_task_get_id(),&priority);
+	_task_get_priority(_task_get_id(),&priority);
 	return PRIORITY_RTOS_TO_OSA(priority);
 }
 
 void priorityset(_mqx_uint newpriority) {
 	_mqx_uint oldpriority;
-	_mqx_uint RETURNCODE = _task_set_priority(_task_get_id(),PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);
+	_task_set_priority(_task_get_id(),PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);
 }
 
 void prioritysettask(_task_id taskid, _mqx_uint newpriority) {
 	_mqx_uint oldpriority;
-	_mqx_uint RETURNCODE = _task_set_priority(taskid,PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);
+	_task_set_priority(taskid,PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);
 }
 
 void abortme() {

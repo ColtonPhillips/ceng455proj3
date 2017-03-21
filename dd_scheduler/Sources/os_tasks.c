@@ -46,6 +46,7 @@ extern "C" {
 #include "RGB.h"
 #include <math.h>
 #include <timer.h>
+
 /*
 ** ===================================================================
 **     Callback    : dd_scheduler_task
@@ -62,12 +63,13 @@ void timer_callback(_timer_id t, void* dataptr, unsigned int seconds, unsigned i
 }
 
 // CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
+// NOT CURRENTLY USED
 void synthetic_compute_ticks(unsigned int ticks){
 	bool flag = true;
 	MQX_TICK_STRUCT Ticks;
 	_time_init_ticks(&Ticks, ticks);
-	_timer_start_oneshot_after_ticks(timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
-
+	_timer_start_oneshot_after_ticks((TIMER_NOTIFICATION_TICK_FPTR)timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
+	// TIMER ELAPSED MODE ENSURES THE TIMER ONLY OCCURS WHEN THE USER TASK IS ACTUALLY RUNNING
 	while (flag){}
 }
 
@@ -77,52 +79,53 @@ void synthetic_compute_ms(unsigned int ms){
 	MQX_TICK_STRUCT Ticks;
 	_time_init_ticks(&Ticks, 0);
 	_time_add_msec_to_ticks(&Ticks, ms);
-	_timer_start_oneshot_after_ticks(timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
-
+	_timer_start_oneshot_after_ticks((TIMER_NOTIFICATION_TICK_FPTR)timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
+	// TIMER ELAPSED MODE ENSURES THE TIMER ONLY OCCURS WHEN THE USER TASK IS ACTUALLY RUNNING
 	while (flag){}
 }
 
 #define TASK_NODE_ARRAY_SIZE 16
 #define NO_TASK 0
+int numOfRunningTasks = 0;
+// TODO: getActiveList() , getOverDueList()
 
-// How many tasks are running O(n)
-int numOfRunningTasks(TASK_NODE_PTR task_list_array) {
-	int i = 0; int num = 0;
+// Set the entire array of structs' deadlines to zero. (therefore they are not active tasks)
+void zeroTaskNodeArray(TASK_NODE_PTR task_node_array) {
+	int i;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
-		if (task_list_array[i].deadline != NO_TASK) {
-			num++;
-		}
+		task_node_array[i].deadline = NO_TASK;
 	}
-	return num;
 }
 
-// Inserting is O(n) in worst case scenario
+// Insert into the first spot with deadline == NO_TASK 		O(n)
 bool insertIntoTaskList(TASK_NODE_PTR task_list_array, TASK_NODE insertedTask) {
 	// todo: keep track of length of list being used.
 	int i = 0;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].deadline == NO_TASK) {
 			task_list_array[i] = insertedTask;
+			numOfRunningTasks++;
 			return true;
 		}
 	}
 	return false;
 }
 
-// Deleting is O(n) in worst case scenario
+// Delete a running task (deadline != NO_TASK) if the tid matches 		O(n)
 bool deleteFromTaskList(TASK_NODE_PTR task_list_array, TASK_NODE Task) {
 	int i = 0;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].tid == Task.tid && task_list_array[i].deadline != NO_TASK) {
 			task_list_array[i].deadline = NO_TASK;
 			task_list_array[i].tid = NO_TASK;
+			numOfRunningTasks--;
 			return true;
 		}
 	}
 	return false;
 }
 
-// Getting EDF task searches entire array therefore is O(n)
+// Find the earliest Deadline within the whole array and set the pointer in argument 0		O(n)
 void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_array) {
 	unsigned int DL_min = 999999999; // sufficiently large enough number
 	*ppEDF = NULL; // return null if the task list is empty
@@ -131,23 +134,16 @@ void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_
 		if (task_list_array[i].deadline < DL_min && task_list_array[i].deadline != NO_TASK) {
 			DL_min = task_list_array[i].deadline;
 			*ppEDF = (TASK_NODE_PTR) &(task_list_array[i]);
-			println("This Happens");
 		}
 	}
-	if (*ppEDF != NULL) {
+	/*if (*ppEDF != NULL) {
 		println((*ppEDF)->deadline);
-	}
+	}*/
 }
 
-// Set the entire array of structs' deadlines to zero.
-void zeroTaskNodeArray(TASK_NODE_PTR task_node_array) {
-	int i;
-	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
-		task_node_array[i].deadline = NO_TASK;
-	}
-}
-
+// This is called during scheduling points on tasks to update creation time to now and deadline to be smaller than before.
 void updateNodeWithRespectToTime(TASK_NODE_PTR tn_ptr) {
+	// TODO: I feel like this is buggy if deadline becomes a negative or zero in some corner cases such as when two tasks are running
 	unsigned int ct = currentTime();
 	unsigned int delta = ct - tn_ptr->creation_time; // how much time has passed since last time it was updated
 	// Deadline is reduced by the amount of time elapsed since the time it was last 'created' (or updated)
@@ -156,36 +152,38 @@ void updateNodeWithRespectToTime(TASK_NODE_PTR tn_ptr) {
 	tn_ptr->creation_time = ct;
 }
 
+#define LOW_USER_TASK_PRIORITY 25
+#define SCHEDULED_USER_TASK_PRIORITY 18
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
 	println("DQ");
 
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
 	_queue_id dd_qid = qopen(DD_QUEUE);
-	priorityset(15);
-	// BLOCKS UNTIL GENERATOR SENDS A CREATE MESSAGE
+	priorityset(15); // PRIORITY IS NOW BELOW THE GENERATOR
+
+	// BLOCKS UNTIL GENERATOR BLOCKS WHEN IT SENDS A MESSAGE
+
 	println("DB");
 
 	// This starts out with an infinite timeout until it gets it's first task!
 	unsigned int deadlineTimeout = 0;
 
-	// Allocate the Task Node buffer of a fixed size and set it all to zero
+	// Allocate the Task Node Array buffer of a fixed size and set it all to zero (deadline) aka no active task in list
 	TASK_NODE_PTR task_node_array = _mem_alloc(TASK_NODE_ARRAY_SIZE * sizeof(TASK_NODE));
 	zeroTaskNodeArray(task_node_array);
 
-	// The currently executing task is stored here as a pointer
+	// The currently executing task is stored here as a pointer and is NULL if there is no EDF (aka set deadlineTimeout to 0)
 	TASK_NODE_PTR earliestDeadlineTask = NULL;
 
+
 	while (1) {
-		// Wait for Any Message
+		// Wait for deadlineTimeout ms for a message (forever if =0)
 		println("DSLEEP");
 		MESSAGE_PTR msg_ptr = msgreceivetimeout(DD_QUEUE, deadlineTimeout);
 		println("DWAKE");
-		if (msg_ptr == NULL) {
-			printf("NULLMSG\n");
-		}
 
-		// Switch on the message's source
+		// v Handle the message v
 
 		// Message pointer is not a timeout, and there exists an already running task:
 		if (msg_ptr != NULL && earliestDeadlineTask != NULL) {
@@ -193,15 +191,20 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			// Update EDF so that it's deadline is fewer, and it's 'creation' is later
 			updateNodeWithRespectToTime(earliestDeadlineTask);
 		}
-		// if a timeout occurs
+
+		// > Handle the deadline timeout case
 		else if (msg_ptr == NULL) {
-			// Turn the task off. abort the task. refresh the EDF.
-			// If EDF != null, update his deadline and 'creationtime' + set the deadlineTimeout
-			// If EDF == null, set timeout to 0 (wait forever)
 			// TODO: add to overdue task
 			println("TIMEOUT");
+
+			// Turn the task off. abort the task. lower active task count
 			earliestDeadlineTask->deadline = NO_TASK;
+			numOfRunningTasks--;
 			_task_abort(earliestDeadlineTask->tid);
+
+			// 1. Refresh the active task.
+			// 2. 	If an active task still exists: update his Node and set the deadlineTimeout to his deadline
+			// 		else If there are now no active tasks, set deadlineTimeout to zero
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 			if (earliestDeadlineTask == NULL) {
 				deadlineTimeout = 0;
@@ -211,83 +214,86 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 				deadlineTimeout = earliestDeadlineTask->deadline;
 			}
 		}
+
+		// > Handle the dd_tcreate message:
 		else if (msgsrc_equals_q(msg_ptr,TASK_CREATOR_QUEUE)) {
-			// Create a task if possible
 
-			//printf((UCHAR_PTR)msg_ptr->DATA);
+			printf("%s",msg_ptr->DATA);
 
-			// put into the task list
+			// put the sent task into the task list
 			bool success = insertIntoTaskList(task_node_array, msg_ptr->TASK_DATA);
 
-			// Free msg_ptr
+			// We are done using the message now
 			_msg_free(msg_ptr);
 
-			// Copy last task PTR
-			TASK_NODE_PTR lastEDFTask = earliestDeadlineTask;
+			// Make a copy reference to the value of EDF (Null if no active task) before EDF is recalculated
+			TASK_NODE_PTR prevEDFTask = earliestDeadlineTask;
 
-			// Refresh EDF task
+			// Since a task is added we have to refresh the EDF pointer in case the new task is high priority
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
-
-			// If it's added, lower the last task priority (to 25) (if there was one)
-			// and then raise the new task priority (18)
+			// If new task is added successfully:
+			// 		-> raise the EDF task priority to 18
+			//		If lastEDF existed (was running), and isn't the same as the new task
+			// 			-> lower it's priority to 25
 			if (success) {
 				println("BUMP UP PRIORITY");
-				prioritysettask(earliestDeadlineTask->tid,18);
-				if (lastEDFTask != NULL && lastEDFTask != earliestDeadlineTask) {
-					prioritysettask(lastEDFTask->tid,25);
+				prioritysettask(earliestDeadlineTask->tid,SCHEDULED_USER_TASK_PRIORITY);
+				if (prevEDFTask != NULL && prevEDFTask != earliestDeadlineTask) {
+					prioritysettask(prevEDFTask->tid,LOW_USER_TASK_PRIORITY);
 					println("BUMP DOWN PRIORITY");
 				}
 			}
 
-			// Allocate a message, populate it, and send
+			// If an EDF exists, it needs to update it's deadline and creation time, and the deadlineTimeout.
+			if (earliestDeadlineTask != NULL) {
+				updateNodeWithRespectToTime(earliestDeadlineTask);
+				deadlineTimeout = earliestDeadlineTask->deadline;
+			}
+			// If there is no EDFs (no success) the deadline should wait forever again
+			else {
+				deadlineTimeout = 0;
+			}
+
+			// Allocate a return data message, populate it, and send
 			UCHAR_PTR returnData;
 			if (success) {returnData = TaskCreatedString;} else {returnData = TaskCreatedFailedString;}
 			msgpushdata(
 				DD_QUEUE, 			// src
 				TASK_CREATOR_QUEUE, // target
 				returnData); 		// data
-
-			// If an EDF exists, it needs to update it's deadline and stuff
-			if (earliestDeadlineTask != NULL) {
-				updateNodeWithRespectToTime(earliestDeadlineTask);
-				deadlineTimeout = earliestDeadlineTask->deadline;
-				out_kill_lights();
-			}
-			else {
-				deadlineTimeout = 0;
-				out_white_light();
-			}
 		}
+		// > Handle dd_delete message
 		else if (msgsrc_equals_q(msg_ptr,TASK_DELETOR_QUEUE)) {
-			// Delete a task
-			printf((UCHAR_PTR)msg_ptr->DATA); // DELETE?
 
-			// Delete from the task list
+			printf("%s", msg_ptr->DATA);
+
+			// Delete the sent task from the active running tasks
 			bool success = deleteFromTaskList(task_node_array, msg_ptr->TASK_DATA);
 
-			// Free msg_ptr
+			// We are done using the message now
 			_msg_free(msg_ptr);
 
-			// Refresh EDF task
+			// Since a task is removed from the array, we refresh the EDF (EDF = NULL if no active tasks exist)
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
-			// If it's deleted and the new EDF is not NULL, raise it's priority (18)
+			// If successful deletion and an EDF now exists, set it to priority 18
 			if (success && earliestDeadlineTask != NULL) {
-				prioritysettask(earliestDeadlineTask->tid,18);
+				prioritysettask(earliestDeadlineTask->tid,SCHEDULED_USER_TASK_PRIORITY);
 				println("DEL RESCHEDULE");
 			}
 
-			// If an EDF (still) exists, it needs to update it's deadline and stuff
+			// If an active task is available, update it's deadline and creation time, and set deadlineTimeout to its deadline
 			if (earliestDeadlineTask != NULL) {
 				updateNodeWithRespectToTime(earliestDeadlineTask);
 				deadlineTimeout = earliestDeadlineTask->deadline;
 			}
+			// No active jobs, so we have to wait!
 			else {
 				deadlineTimeout = 0;
 			}
 
-			// Allocate a message, populate it, and send
+			// Allocate a return data message, populate it, and send
 			UCHAR_PTR returnData;
 			if (success) {returnData = TaskDeletedString;} else {returnData = TaskDeletedFailedString;}
 			msgpushdata(
@@ -295,9 +301,17 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 				TASK_DELETOR_QUEUE, // target
 				returnData); 		// data
 		}
-		// switch case ends
-		printf("RUN:%d\n", numOfRunningTasks(task_node_array));
+
+		else if (msgsrc_equals_q(msg_ptr,ACTIVE_LIST_QUEUE)) {
+			//Copy a new chunk of memory the size of the active array
+			//
+		}
+
+		// ^ Message has been handled ^
+
+		printf("RUN:%d\n", numOfRunningTasks);
 	}
+	_msgq_close(dd_qid);
 	println("DE");
 	abortme();
 }
@@ -314,7 +328,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 #define TIMER_TASK_PRIORITY 2
 #define TIMER_STACK_SIZE 2000
 
-//#define WILL_CREATE_PERIODIC_TASKS
+#define WILL_CREATE_PERIODIC_TASKS
 #define PERIODIC_PERIOD 800
 #define PERIODIC_EXECUTION 400
 
@@ -324,22 +338,21 @@ static void PeriodicallyAddTask(
 		MQX_TICK_STRUCT_PTR tick_ptr) {
 	println("Periodic");
 
-	// Add a new task!
 	dd_tcreate(DD_USER_TASK, PERIODIC_EXECUTION, PERIODIC_PERIOD);
 
-	_time_init_ticks(&tick_ptr,0);
-	_time_add_msec_to_ticks(&tick_ptr,PERIODIC_PERIOD);
-	*(_timer_id * )data_ptr = _timer_start_periodic_every_ticks(PeriodicallyAddTask,0,TIMER_ELAPSED_TIME_MODE, &tick_ptr);
+	_time_init_ticks(tick_ptr,0);
+	_time_add_msec_to_ticks(tick_ptr,PERIODIC_PERIOD);
+	*(_timer_id * )data_ptr = _timer_start_periodic_every_ticks(PeriodicallyAddTask,0,TIMER_KERNEL_TIME_MODE, tick_ptr);
 }
 
 void generator_task(os_task_param_t task_init_data)
 {
-	// TODO: Don't naively generate tasks
-	// TODO: Create a timer for each periodic task
+	// TODO: Create a timer for each periodic task instead of just one periodic task
 	println("GB");
+
 	// Create a Active task-list and an Overdue task list (empty)
-	TASK_NODE_PTR active_tasks_head_ptr  = NULL;
-	TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
+	//TASK_NODE_PTR active_tasks_head_ptr  = NULL;
+	//TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
 
 	// Start off with some aperiodic user tasks
 	dd_tcreate(DD_USER_TASK, 1600, 400);
@@ -348,13 +361,15 @@ void generator_task(os_task_param_t task_init_data)
 
 
 #ifdef WILL_CREATE_PERIODIC_TASKS
+//	struct task_def c[10] = {{1,2,4,5}, {1,3,5}}
+
 	// Create a Timer(s) for periodic tasks
 	MQX_TICK_STRUCT tick1;
 	_timer_id periodic_task_timer;
 	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
 	_time_init_ticks(&tick1, 0);
 	_time_add_msec_to_ticks(&tick1, PERIODIC_PERIOD);
-	periodic_task_timer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&periodic_task_timer,TIMER_ELAPSED_TIME_MODE, &tick1);
+	periodic_task_timer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&periodic_task_timer,TIMER_KERNEL_TIME_MODE, &tick1);
 #endif
 
 	println("GE");

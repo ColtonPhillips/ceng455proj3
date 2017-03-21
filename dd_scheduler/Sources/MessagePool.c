@@ -17,18 +17,6 @@ _queue_id qopen(_queue_number QNUMBER) {
 	return qid;
 }
 
-// helper function to open a System Q
-// TODO: DELETE. use private q for DD only.
-_queue_id qsysopen(_queue_number QNUMBER) {
-	_queue_id qid  = _msgq_open_system(QNUMBER,80,0,0);
-	if (qid == 0) {
-	  printf("\nCould not open a system message queue\n");
-	  printf("%d\n",(int)_task_get_error());
-	  _task_block();
-	}
-	return qid;
-}
-
 // helper function to allocate a message
 MESSAGE_PTR msgalloc() {
 	MESSAGE_PTR msg_ptr = (MESSAGE_PTR)_msg_alloc(message_pool);
@@ -39,7 +27,7 @@ MESSAGE_PTR msgalloc() {
 	return msg_ptr;
 }
 
-/* create a message pool */
+/* helper function: create a message pool */
 void init_message_pool() {
 	   message_pool = _msgpool_create(sizeof(MESSAGE),
 		  80, 0, 0);
@@ -49,8 +37,8 @@ void init_message_pool() {
 	   }
 }
 
-// returns a task list pointer but probably leaks memory
-TASK_NODE taskListFactory(
+// helper function to populate a task list in fewer keystrokes.
+TASK_NODE taskNodeFactory(
 		unsigned int taskid,
 		unsigned int deadline,
 		unsigned int task_type,
@@ -64,7 +52,7 @@ TASK_NODE taskListFactory(
 	return tl;
 }
 
-// helper function to send message_ptr
+// helper function to send message which has been set up with a target prior
 void msgsend(MESSAGE_PTR msg_ptr) {
 	if (!_msgq_send(msg_ptr)) {
 		printf("\nCould not send a message\n");
@@ -73,7 +61,7 @@ void msgsend(MESSAGE_PTR msg_ptr) {
 	}
 }
 
-// Fill a message pointer (source qid, target qid, task list, and string msg data)
+// helper function to populate a message in fewer keystrokes (source QNumber, target QNumber, task list, and string msg data)
 void msgpop(
 		MESSAGE_PTR msg_ptr,
 		_queue_number qNumberSource,
@@ -88,7 +76,7 @@ void msgpop(
 	strcpy(msg_ptr->DATA, (UCHAR_PTR)data);
 }
 
-// Push a message to the target qid
+// Push a message to the target qid that includes an actually important and populated task (usually to DD or Monitor)
 void msgpushtask(
 		_queue_number qNumberSource,
 		_queue_number qNumberTarget,
@@ -107,12 +95,12 @@ void msgpushtask(
 	//the memory is not to be freed by the creator of msg
 }
 
-// Just fill the tasklist with garbage. It's not important for some messages.
+// Just fill the tasklist with anything. It's not important for some messages, like the ones DD sends to access functions.
 void msgpushdata(_queue_number qNumberSource, _queue_number qNumberTarget, unsigned char * data) {
 	msgpushtask(
 		qNumberSource,
 		qNumberTarget,
-		taskListFactory(0, 0, 0, currentTime()),
+		taskNodeFactory(0, 0, 0, currentTime()),
 		data);
 }
 
@@ -127,19 +115,15 @@ MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 	return msg_ptr;
 }
 
-// Timesout with ms as timeout argument
+// Receive with a ms value as a timeout argument
 MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
 	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), timeout);
 	if (msg_ptr == NULL) {
-		//printf("\nCould not receive a timeout message\n");
-		//printf("%d\n",(int)_task_get_error());
-		//_task_block();
-		println("MSGNULL");
+		// TODO: Check if the NULL is an error or a timeout. We're assuming its a timeout. :/
+		println("MSGTIMEOUT");
 	}
-	// returns null if a timeout occurs or if a error occurs.
 	return msg_ptr;
 }
-
 
 // helper function to see if a msg ptr has same target qid as QTYPE
 bool msgtarget_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER) {

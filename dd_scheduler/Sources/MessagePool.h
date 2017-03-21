@@ -7,50 +7,54 @@
 
 #ifndef SOURCES_MESSAGEPOOL_H_
 #define SOURCES_MESSAGEPOOL_H_
+
 #include <mqx.h>
 #include <message.h>
 
+// Q IDS
 #define DD_QUEUE 9
 #define  TASK_CREATOR_QUEUE 10
 #define  TASK_DELETOR_QUEUE 11
 #define  ACTIVE_LIST_QUEUE 12
 #define  OVERDUE_LIST_QUEUE 13
 
+// handy function to get the current elapsed time in ms
 unsigned int currentTime() {
 	TIME_STRUCT ts;
 	_time_get_elapsed(&ts);
 	return ts.SECONDS * (1000) + ts.MILLISECONDS;
 }
 
-// const strings sent as Data
+// these strings are sent as Data
 typedef unsigned char * UCHAR_PTR;
 const UCHAR_PTR TaskCreatedString = (UCHAR_PTR) "TASK CREATED\n";
 const UCHAR_PTR TaskCreatedFailedString = (UCHAR_PTR) "TASK CREATED FAILED\n";
-
 const UCHAR_PTR TaskDeletedString = (UCHAR_PTR) "TASK DELETED\n";
 const UCHAR_PTR TaskDeletedFailedString = (UCHAR_PTR) "TASK DELETED FAILED\n";
 
-typedef struct task_list {
-	unsigned int tid;
-	unsigned int deadline;
-	unsigned int task_type;
-	unsigned int creation_time;
+// This struct is passed along through every message and is the basis of the DD task list
+typedef struct my_task_node {
+	unsigned int tid;				// Task ID
+	unsigned int deadline;			// Deadline (relative) - will change, and equals NO_TASK if the task is not a true task
+	unsigned int task_type;			// Always User Task
+	unsigned int creation_time;		// Creation time (elapsed from beginning of program) - will change
 } TASK_NODE, * TASK_NODE_PTR;
 
+// Every message containst a task node even if its not actually important or used such as returning status to the access functions
 #define DATA_BUFFER_SIZE 64
 typedef struct my_messsage
 {
 	MESSAGE_HEADER_STRUCT HEADER;
 	TASK_NODE TASK_DATA;
-	unsigned char DATA[DATA_BUFFER_SIZE];
+	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as TaskCreatedString
 } MESSAGE, * MESSAGE_PTR;
 
+// Only one message pool is necessary
 _pool_id message_pool;
 
 _queue_id qopen(_queue_number QNUMBER);
-_queue_id qsysopen(_queue_number QNUMBER);
 MESSAGE_PTR msgalloc();
-TASK_NODE taskListFactory(unsigned int taskid, unsigned int deadline, unsigned int task_type, unsigned int creation_time);
+TASK_NODE taskNodeFactory(unsigned int taskid, unsigned int deadline, unsigned int task_type, unsigned int creation_time);
 void init_message_pool();
 void msgpop(MESSAGE_PTR msg_ptr, _queue_number sourceNumber, _queue_number targetNumber, TASK_NODE task_ptr, unsigned char * data);
 void msgsend(MESSAGE_PTR msg_ptr);

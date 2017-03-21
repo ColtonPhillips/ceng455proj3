@@ -31,7 +31,7 @@ _task_id dd_tcreate(
 	msgpushtask(
 			TASK_CREATOR_QUEUE, // src
 			DD_QUEUE,			// target
-			taskListFactory(	// the new task
+			taskNodeFactory(	// the new task
 				this_task_id,
 				deadline, // relative
 				template_index,
@@ -48,7 +48,7 @@ _task_id dd_tcreate(
 	//printf((UCHAR_PTR)msg_ptr->DATA);
 
 	bool taskAdded = false;
-	if (strcmp(msg_ptr->DATA, TaskCreatedString) == 0) {
+	if (strcmp((char * ) msg_ptr->DATA, (char * )TaskCreatedString) == 0) {
 		taskAdded = true;
 	}
 
@@ -71,7 +71,7 @@ bool dd_delete(unsigned int task_id) {
 	msgpushtask(
 			TASK_DELETOR_QUEUE, // src
 			DD_QUEUE,			// target
-			taskListFactory(	// the new task
+			taskNodeFactory(	// the new task
 				task_id,
 				0,
 				0,
@@ -85,10 +85,10 @@ bool dd_delete(unsigned int task_id) {
 	_msgq_close(deletor_qid);
 
 	// use the message and check for error
-	printf((UCHAR_PTR)msg_ptr->DATA);
+	printf("%s", msg_ptr->DATA);
 
 	bool taskDeleted = false;
-	if (strcmp(msg_ptr->DATA, TaskDeletedString) == 0) {
+	if (strcmp((char *) msg_ptr->DATA, (char * ) TaskDeletedString) == 0) {
 		taskDeleted = true;
 	}
 
