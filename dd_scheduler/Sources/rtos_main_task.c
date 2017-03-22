@@ -43,6 +43,7 @@ extern "C" {
 #include "BTN.h"
 #include "MessagePool.h"
 #include "helper_function.h"
+#include <stdio.h>
 /* Initialization of Processor Expert components function prototype */
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
 extern void PEX_components_init(void);
@@ -63,7 +64,7 @@ void init_main_task() {
 	init_GPIO(); // init the input and output gpios
 	init_buttons(); // init the 2 buttons
 	init_RGB_light(); // blue light indicates the light system is on.
-	init_message_pool(); // Initializes the TASK_LIST message pool and DD q
+	init_message_pools(); // Initializes the TASK_LIST message pool and DD q
 }
 
 /*
@@ -84,13 +85,12 @@ void main_task(os_task_param_t task_init_data)
 #endif 
   // ASK SAMAN WHEN THE EARLIEST IS KAM CAN SHOW UP
   	printf("\x1B[H\x1B[J"); // clear print window
-  	println("MTB");
+	 println("Main");
   	init_main_task();
   	out_kill_lights();
   	_task_create(0,DD_GENERATOR_TASK,0);
   	_task_create(0,DD_SCHEDULER_TASK,0);
   	_task_create(0,DD_IDLE_TASK,0);
- 	 println("MTE");
   	_task_abort(_task_get_id());
   	// After task aborts, Scheduler runs long enough to create a system q,
   	// then it changes it's priority, so Generator gets a chance to run.

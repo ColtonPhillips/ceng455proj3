@@ -47,13 +47,13 @@ pointer pointing to the start of the list could suffice. Analyze the alternative
 implementation choice.
  *
  * */
-unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr);
+unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned int * size);
 
 /*
  * This primitive requests the DD-scheduler for the list of overdue tasks and returns this information to the
 requestor. Similar in structure as the dd_return_active_list primitive.
  *
  * */
-unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr);
+unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr , unsigned int * size);
 
 #endif /* SOURCES_ACCESS_FUNCTIONS_H_ */

@@ -6,6 +6,7 @@
  */
 #include "MessagePool.h"
 #include <stdio.h>
+#include "helper_function.h"
 
 // helper function to open a Q
 _queue_id qopen(_queue_number QNUMBER) {
@@ -27,12 +28,30 @@ MESSAGE_PTR msgalloc() {
 	return msg_ptr;
 }
 
+// helper function to allocate a message
+MONITOR_MESSAGE_PTR monitormsgalloc() {
+	MONITOR_MESSAGE_PTR mon_msg_ptr = (MONITOR_MESSAGE_PTR)_msg_alloc(monitor_message_pool);
+	if (mon_msg_ptr == NULL) {
+		 printf("\nCould not allocate a message\n");
+		 _task_block();
+	}
+	return mon_msg_ptr;
+}
+
 /* helper function: create a message pool */
-void init_message_pool() {
+#define NUM_OF_MESSAGES 80
+void init_message_pools() {
 	   message_pool = _msgpool_create(sizeof(MESSAGE),
-		  80, 0, 0);
+			   NUM_OF_MESSAGES, 0, 0);
 	   if (message_pool == MSGPOOL_NULL_POOL_ID) {
 		  printf("\nCould not create a message pool\n");
+		  _task_block();
+	   }
+
+	   monitor_message_pool = _msgpool_create(sizeof(MONITOR_MESSAGE),
+		   NUM_OF_MESSAGES, 0, 0);
+	   if (monitor_message_pool == MSGPOOL_NULL_POOL_ID) {
+		  printf("\nCould not create a monitor message pool\n");
 		  _task_block();
 	   }
 }
@@ -61,7 +80,31 @@ void msgsend(MESSAGE_PTR msg_ptr) {
 	}
 }
 
+void monitormsgsend(MONITOR_MESSAGE_PTR mon_msg_ptr) {
+	if (!_msgq_send(mon_msg_ptr)) {
+		printf("\nCould not send a monitor message\n");
+		printf("%d\n",(int)_task_get_error());
+		_task_block();
+	}
+}
+
 // helper function to populate a message in fewer keystrokes (source QNumber, target QNumber, task list, and string msg data)
+void monitormsgpop(
+		MONITOR_MESSAGE_PTR mon_msg_ptr,
+		_queue_number qNumberSource,
+		_queue_number qNumberTarget,
+		TASK_NODE_PTR taskHead_ptr,
+		unsigned int size,
+		unsigned char * data)
+{
+	mon_msg_ptr->HEADER.SOURCE_QID = _msgq_get_id(0, qNumberSource);
+	mon_msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
+	mon_msg_ptr->HEADER.SIZE = sizeof(MONITOR_MESSAGE);
+	mon_msg_ptr->monitor_data.task_list_head = taskHead_ptr;
+	mon_msg_ptr->monitor_data.task_list_size = size;
+	strcpy((char * )mon_msg_ptr->DATA, (char * ) data);
+}
+
 void msgpop(
 		MESSAGE_PTR msg_ptr,
 		_queue_number qNumberSource,
@@ -73,8 +116,9 @@ void msgpop(
 	msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
 	msg_ptr->HEADER.SIZE = sizeof(MESSAGE);
 	msg_ptr->TASK_DATA = task;
-	strcpy(msg_ptr->DATA, (UCHAR_PTR)data);
+	strcpy((char * )msg_ptr->DATA, (char * ) data);
 }
+
 
 // Push a message to the target qid that includes an actually important and populated task (usually to DD or Monitor)
 void msgpushtask(
@@ -91,6 +135,25 @@ void msgpushtask(
 
 	// Send the message
 	msgsend(msg_ptr);
+	// no need to return message pointer because
+	//the memory is not to be freed by the creator of msg
+}
+
+void monitormsgpush(
+		_queue_number qNumberSource,
+		_queue_number qNumberTarget,
+		TASK_NODE_PTR task_node_ptr,
+		unsigned int size,
+		unsigned char * data)
+{
+	// Allocate a message
+	MONITOR_MESSAGE_PTR mon_msg_ptr = monitormsgalloc();
+
+	// Populate a message
+	monitormsgpop(mon_msg_ptr, qNumberSource, qNumberTarget, task_node_ptr, size, data);
+
+	// Send the message
+	monitormsgsend(mon_msg_ptr);
 	// no need to return message pointer because
 	//the memory is not to be freed by the creator of msg
 }
@@ -113,6 +176,17 @@ MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 		_task_block();
 	}
 	return msg_ptr;
+}
+
+// helper function to receive monitor message of type QTYPE
+MONITOR_MESSAGE_PTR monitormsgreceive(_queue_number QNUMBER) {
+	MONITOR_MESSAGE_PTR mon_msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), 0);
+	if (mon_msg_ptr == NULL) {
+		printf("\nCould not receive a message\n");
+		printf("%d\n",(int)_task_get_error());
+		_task_block();
+	}
+	return mon_msg_ptr;
 }
 
 // Receive with a ms value as a timeout argument

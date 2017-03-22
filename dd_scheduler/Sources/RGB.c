@@ -26,6 +26,21 @@ void out_green_light(){GPIO_DRV_ClearPinOutput(LED_Green);}
 void out_blue_light(){GPIO_DRV_ClearPinOutput(LED_Blue);}
 void out_white_light(){out_red_light();out_green_light();out_blue_light();}
 
+void red_light() {
+	out_kill_lights();
+	out_red_light();
+}
+
+void blue_light() {
+	out_kill_lights();
+	out_blue_light();
+}
+
+void green_light() {
+	out_kill_lights();
+	out_green_light();
+}
+
 //let's have some fun: Flashing party lights!
 int fifty_fifty() {
 	return rand() % 2;

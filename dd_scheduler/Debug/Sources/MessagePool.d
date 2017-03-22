@@ -46,7 +46,8 @@ Sources/MessagePool.o: ../Sources/MessagePool.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwevent.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwsem.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
+ ../Sources/helper_function.h ../Sources/RGB.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
@@ -143,3 +144,7 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwsem.h:
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmsgq.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h:
+
+../Sources/helper_function.h:
+
+../Sources/RGB.h:

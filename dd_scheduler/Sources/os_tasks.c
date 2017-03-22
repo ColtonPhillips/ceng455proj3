@@ -130,15 +130,15 @@ void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_
 	unsigned int DL_min = 999999999; // sufficiently large enough number
 	*ppEDF = NULL; // return null if the task list is empty
 	int i = 0;
+	//printf("\n");
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].deadline < DL_min && task_list_array[i].deadline != NO_TASK) {
 			DL_min = task_list_array[i].deadline;
 			*ppEDF = (TASK_NODE_PTR) &(task_list_array[i]);
+//			printf("%d ", DL_min);
 		}
 	}
-	/*if (*ppEDF != NULL) {
-		println((*ppEDF)->deadline);
-	}*/
+//	printf("\nWORK?:%d\n",(*ppEDF)->deadline);
 }
 
 // This is called during scheduling points on tasks to update creation time to now and deadline to be smaller than before.
@@ -152,12 +152,23 @@ void updateNodeWithRespectToTime(TASK_NODE_PTR tn_ptr) {
 	tn_ptr->creation_time = ct;
 }
 
+TASK_NODE_PTR getActiveTaskHeadPtr(TASK_NODE_PTR task_node_array) {
+	TASK_NODE_PTR active_task_node_array = _mem_alloc(numOfRunningTasks * sizeof(TASK_NODE));
+	int current_active_task_node = 0;
+	int i;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_node_array->deadline != 0) {
+			active_task_node_array[current_active_task_node] = task_node_array[i];
+			current_active_task_node++;
+		}
+	}
+	return active_task_node_array;
+}
+
 #define LOW_USER_TASK_PRIORITY 25
 #define SCHEDULED_USER_TASK_PRIORITY 18
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
-	println("DQ");
-
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
 	_queue_id dd_qid = qopen(DD_QUEUE);
 	priorityset(15); // PRIORITY IS NOW BELOW THE GENERATOR
@@ -179,7 +190,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 	while (1) {
 		// Wait for deadlineTimeout ms for a message (forever if =0)
-		println("DSLEEP");
+		printf("RUN:%d\n", numOfRunningTasks);
 		MESSAGE_PTR msg_ptr = msgreceivetimeout(DD_QUEUE, deadlineTimeout);
 		println("DWAKE");
 
@@ -193,7 +204,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		}
 
 		// > Handle the deadline timeout case
-		else if (msg_ptr == NULL) {
+		if (msg_ptr == NULL) {
 			// TODO: add to overdue task
 			println("TIMEOUT");
 
@@ -230,18 +241,19 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			TASK_NODE_PTR prevEDFTask = earliestDeadlineTask;
 
 			// Since a task is added we have to refresh the EDF pointer in case the new task is high priority
+			//printf("HOME:%d LAST:%d\n",earliestDeadlineTask->deadline, prevEDFTask->deadline);
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
-
+			//printf("END:%d LAST:%d\n",earliestDeadlineTask->deadline, prevEDFTask->deadline);
 			// If new task is added successfully:
 			// 		-> raise the EDF task priority to 18
 			//		If lastEDF existed (was running), and isn't the same as the new task
 			// 			-> lower it's priority to 25
 			if (success) {
-				println("BUMP UP PRIORITY");
+				println("BUMPUP");
 				prioritysettask(earliestDeadlineTask->tid,SCHEDULED_USER_TASK_PRIORITY);
 				if (prevEDFTask != NULL && prevEDFTask != earliestDeadlineTask) {
 					prioritysettask(prevEDFTask->tid,LOW_USER_TASK_PRIORITY);
-					println("BUMP DOWN PRIORITY");
+					println("BUMPDWN");
 				}
 			}
 
@@ -303,13 +315,43 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		}
 
 		else if (msgsrc_equals_q(msg_ptr,ACTIVE_LIST_QUEUE)) {
+
+			printf("%s", msg_ptr->DATA);
+
+			// We are done using the message now
+			_msg_free(msg_ptr);
+
+			// get new memory of the for the list of tasks running:
+			unsigned int activeTaskListSize = numOfRunningTasks;
+			TASK_NODE_PTR activeTaskListHead = getActiveTaskHeadPtr(task_node_array);
+
+			// the EDF is surely the monitor task: update the deadlineTimeout
+			updateNodeWithRespectToTime(earliestDeadlineTask);
+			deadlineTimeout = earliestDeadlineTask->deadline;
+			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
+
+			// Allocate a return data message, populate it, and send
+			UCHAR_PTR returnData;
+			if (1) {returnData = ActiveListPassedString;} else {returnData = ActiveListFailedString;}
+			monitormsgpush(
+				DD_QUEUE, 			// src
+				TASK_DELETOR_QUEUE, // target
+				activeTaskListHead, // Task list
+				activeTaskListSize, // num of tasks running
+				returnData); 		// data
+		}
+
+		else if (msgsrc_equals_q(msg_ptr,OVERDUE_LIST_QUEUE)) {
 			//Copy a new chunk of memory the size of the active array
 			//
 		}
 
 		// ^ Message has been handled ^
-
-		printf("RUN:%d\n", numOfRunningTasks);
+		printf("ED TID: %d, DL:%d \n",earliestDeadlineTask->tid, earliestDeadlineTask->deadline);
+		int i = 0;
+		while (i > 200) {
+			i++;
+		}
 	}
 	_msgq_close(dd_qid);
 	println("DE");
@@ -328,7 +370,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 #define TIMER_TASK_PRIORITY 2
 #define TIMER_STACK_SIZE 2000
 
-#define WILL_CREATE_PERIODIC_TASKS
+//#define WILL_CREATE_PERIODIC_TASKS
 #define PERIODIC_PERIOD 800
 #define PERIODIC_EXECUTION 400
 
@@ -345,19 +387,19 @@ static void PeriodicallyAddTask(
 	*(_timer_id * )data_ptr = _timer_start_periodic_every_ticks(PeriodicallyAddTask,0,TIMER_KERNEL_TIME_MODE, tick_ptr);
 }
 
+#define MONITORING_PERIOD 5000
 void generator_task(os_task_param_t task_init_data)
 {
 	// TODO: Create a timer for each periodic task instead of just one periodic task
 	println("GB");
 
-	// Create a Active task-list and an Overdue task list (empty)
-	//TASK_NODE_PTR active_tasks_head_ptr  = NULL;
-	//TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
-
 	// Start off with some aperiodic user tasks
-	dd_tcreate(DD_USER_TASK, 1600, 400);
-	//dd_tcreate(DD_USER_TASK, 500, 800);
-	//dd_tcreate(DD_USER_TASK, 500, 800);
+	dd_tcreate(DD_USER_TASK, 100, 60000);
+	dd_tcreate(DD_USER_TASK, 500, 50000);
+	dd_tcreate(DD_USER_TASK, 500, 30000);
+
+	// Create a monitor task.
+	//dd_tcreate(DD_MONITOR_TASK,0,MONITORING_PERIOD);
 
 
 #ifdef WILL_CREATE_PERIODIC_TASKS
@@ -388,6 +430,43 @@ void generator_task(os_task_param_t task_init_data)
 void monitor_task(os_task_param_t task_init_data)
 {
 	println("MB");
+
+	// Get Overdue and Active Tasks
+	TASK_NODE_PTR active_tasks_head_ptr  = NULL;
+	TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
+	unsigned int active_size = 0;
+	unsigned int overdue_size = 0;
+	dd_return_active_list(&active_tasks_head_ptr, &active_size);
+	dd_return_overdue_list(&overdue_tasks_head_ptr, &overdue_size);
+
+
+
+	// Set Red Light if any tasks overdue
+	if (overdue_tasks_head_ptr != NULL) {
+		red_light();
+	}
+
+	if (active_tasks_head_ptr != NULL) {
+		blue_light();
+	}
+
+	if (active_size == 4) {
+		green_light();
+	}
+
+	// Free the memory my dude.
+	int i;
+	for (i = 0; i < active_size; i++) {
+		_mem_free(&(active_tasks_head_ptr[i]));
+	}
+	for (i = 0; i < overdue_size; i++) {
+		_mem_free(&(overdue_tasks_head_ptr[i]));
+	}
+
+	// Delete this task from DD and schedule another one! :)
+	bool b = dd_delete(_task_get_id());
+	if (!b) {println("MONITOR DELETE FAILED");}
+	dd_tcreate(DD_MONITOR_TASK,0,MONITORING_PERIOD);
 	println("ME");
 	abortme();
 }
@@ -424,9 +503,9 @@ void idle_task(os_task_param_t task_init_data)
 void user_task(os_task_param_t task_init_data)
 {
 	println("UB");
+	printf("U ID: %d\n", (int) _task_get_id());
 	unsigned int executionTime = (unsigned int) task_init_data;
 	synthetic_compute_ms(executionTime);
-	println("UE");
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("DELETE FAILED");}
 	abortme();

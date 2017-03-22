@@ -18,12 +18,11 @@ _task_id dd_tcreate(
 		unsigned int execution,// in relative ms
 		unsigned int deadline) // in relative ms
 {
-	println("CrB");
 	// Open a message queue
 	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
 
 	_task_id this_task_id = _task_create(0,template_index,execution);
-
+	//printf("C TID: %d, Dl: %d\n",(int)this_task_id, (int) deadline);
 	// Set user task priority to that of the minimum (25)
 	prioritysettask(this_task_id,25);
 
@@ -55,15 +54,12 @@ _task_id dd_tcreate(
 	// free the message
 	_msg_free(msg_ptr);
 
- 	println("CreE");
 	//Returns taskID of created task if task actually added to DD scheduler otherwise error.
  	if (!taskAdded) return ACCESS_ERROR;
 	return this_task_id;
 }
 
 bool dd_delete(unsigned int task_id) {
- 	println("DelB");
-
 	// Open a message queue
 	_queue_id deletor_qid  = qopen(TASK_DELETOR_QUEUE);
 
@@ -76,7 +72,7 @@ bool dd_delete(unsigned int task_id) {
 				0,
 				0,
 				0),
-			(unsigned char *)"DELETE?\n"); // The Data
+			(unsigned char *)"DEL\n"); // The Data
 
 	// Wait for reply at the q above
 	MESSAGE_PTR msg_ptr = msgreceive(TASK_DELETOR_QUEUE);
@@ -85,7 +81,7 @@ bool dd_delete(unsigned int task_id) {
 	_msgq_close(deletor_qid);
 
 	// use the message and check for error
-	printf("%s", msg_ptr->DATA);
+	//printf("%s", msg_ptr->DATA);
 
 	bool taskDeleted = false;
 	if (strcmp((char *) msg_ptr->DATA, (char * ) TaskDeletedString) == 0) {
@@ -95,36 +91,47 @@ bool dd_delete(unsigned int task_id) {
 	// free the message
 	_msg_free(msg_ptr);
 
-	//Returns error (task not deleted or found) or no error (task deleted)
- 	println("DelE");
-
 	//Returns true or false if the task actually deleted from the DD scheduler
  	if (!taskDeleted) return ACCESS_ERROR;
 	return ACCESS_PASS;
 }
 
-unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr) {
+unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned int * size) {
 	// Open a message queue
 	_queue_id active_list_qid  = qopen(ACTIVE_LIST_QUEUE);
+
 	// Allocate, populate and send a msg
-	//msgpush(DD_QUEUE, taskListFactory(DD_QUEUE, this_task_id, deadline, template_index, _time_get_hwticks()));
+	msgpushtask(
+				ACTIVE_LIST_QUEUE, // src
+				DD_QUEUE,			// target
+				taskNodeFactory(	// the new task
+					0,
+					0,
+					0,
+					0),
+				(unsigned char *)"ACTIVELIST?\n"); // The Data
 
 	// Wait for reply at the q above
-	MESSAGE_PTR msg_ptr = msgreceive(ACTIVE_LIST_QUEUE);
+	MONITOR_MESSAGE_PTR mon_msg_ptr = monitormsgreceive(ACTIVE_LIST_QUEUE);
 
 	// Destroy the Q
 	_msgq_close(active_list_qid);
 
 	// use the message to get the active list and set to the paramater above
+	* active_tasks_head_ptr = mon_msg_ptr->monitor_data.task_list_head;
+	* size = mon_msg_ptr->monitor_data.task_list_size;
 
 	// free the message
-	_msg_free(msg_ptr);
+	_msg_free(mon_msg_ptr);
 
 	//Returns error or no error
 	return 1;
 }
 
-unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr) {
+unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr, unsigned int * size) {
+
+	return 1;
+/*
 	// Open a message queue
 	_queue_id overdue_list_qid  = qopen(OVERDUE_LIST_QUEUE);
 	// Allocate, populate and send a msg
@@ -142,5 +149,5 @@ unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr) {
 	_msg_free(msg_ptr);
 
 	//Returns error or no error
-	return 1;
+	return 1;*/
 }

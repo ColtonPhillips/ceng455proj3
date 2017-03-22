@@ -19,5 +19,7 @@ void out_white_light();
 void init_RGB_light();
 int fifty_fifty();
 void party_lights();
-
+void red_light();
+void blue_light();
+void green_light();
 #endif /* SOURCES_RGB_H_ */

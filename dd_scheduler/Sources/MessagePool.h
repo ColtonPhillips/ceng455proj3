@@ -31,6 +31,10 @@ const UCHAR_PTR TaskCreatedString = (UCHAR_PTR) "TASK CREATED\n";
 const UCHAR_PTR TaskCreatedFailedString = (UCHAR_PTR) "TASK CREATED FAILED\n";
 const UCHAR_PTR TaskDeletedString = (UCHAR_PTR) "TASK DELETED\n";
 const UCHAR_PTR TaskDeletedFailedString = (UCHAR_PTR) "TASK DELETED FAILED\n";
+const UCHAR_PTR ActiveListPassedString = (UCHAR_PTR) "ACTIVE LIST PASS\n";
+const UCHAR_PTR ActiveListFailedString = (UCHAR_PTR) "ACTIVE LIST FAILED\n";
+const UCHAR_PTR OverdueListPassedString = (UCHAR_PTR) "OVERDUE LIST PASS\n";
+const UCHAR_PTR OverdueListFailedString = (UCHAR_PTR) "OVERDUE LIST FAILED\n";
 
 // This struct is passed along through every message and is the basis of the DD task list
 typedef struct my_task_node {
@@ -39,6 +43,12 @@ typedef struct my_task_node {
 	unsigned int task_type;			// Always User Task
 	unsigned int creation_time;		// Creation time (elapsed from beginning of program) - will change
 } TASK_NODE, * TASK_NODE_PTR;
+
+// This struct is used for passing to the monitor for active and overdue tasks
+typedef struct monitor_node {
+	TASK_NODE_PTR task_list_head;
+	unsigned int task_list_size;
+} MONITOR_NODE, * MONITOR_NODE_PTR;
 
 // Every message containst a task node even if its not actually important or used such as returning status to the access functions
 #define DATA_BUFFER_SIZE 64
@@ -49,18 +59,33 @@ typedef struct my_messsage
 	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as TaskCreatedString
 } MESSAGE, * MESSAGE_PTR;
 
-// Only one message pool is necessary
+typedef struct my_monitor_messsage
+{
+	MESSAGE_HEADER_STRUCT HEADER;
+	MONITOR_NODE monitor_data;
+	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as ActiveTaskPassedString
+} MONITOR_MESSAGE, * MONITOR_MESSAGE_PTR;
+
+
+// message pool is for task messages
+// monitor message pools is for monitor messages
 _pool_id message_pool;
+_pool_id monitor_message_pool;
 
 _queue_id qopen(_queue_number QNUMBER);
 MESSAGE_PTR msgalloc();
+MONITOR_MESSAGE_PTR monitormsgalloc();
 TASK_NODE taskNodeFactory(unsigned int taskid, unsigned int deadline, unsigned int task_type, unsigned int creation_time);
-void init_message_pool();
+void init_message_pools();
 void msgpop(MESSAGE_PTR msg_ptr, _queue_number sourceNumber, _queue_number targetNumber, TASK_NODE task_ptr, unsigned char * data);
+void monitormsgpop(MONITOR_MESSAGE_PTR msg_ptr, _queue_number qNumberSource, _queue_number qNumberTarget, TASK_NODE_PTR taskHead_ptr, unsigned int size, unsigned char * data);
 void msgsend(MESSAGE_PTR msg_ptr);
+void monitormsgsend(MONITOR_MESSAGE_PTR mon_msg_ptr);
 void msgpushtask(_queue_number qidSource, _queue_number qidTarget, TASK_NODE task, unsigned char * data);
 void msgpushdata(_queue_number qidSource, _queue_number qidTarget, unsigned char * data);
+void monitormsgpush(_queue_number qNumberSource, _queue_number qNumberTarget, TASK_NODE_PTR task_node_ptr, unsigned int size, unsigned char * data);
 MESSAGE_PTR msgreceive(_queue_number QNUMBER);
+MONITOR_MESSAGE_PTR monitormsgreceive(_queue_number QNUMBER);
 MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout);
 bool msgtarget_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER);
 bool msgsrc_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER);

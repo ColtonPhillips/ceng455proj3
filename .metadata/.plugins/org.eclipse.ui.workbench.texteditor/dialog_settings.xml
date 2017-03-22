@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="numOf" key="selection"/>
+		<item value="CR\n" key="selection"/>
 		<list key="findhistory">
+			<item value="CR"/>
+			<item value="CR\n"/>
+			<item value="println"/>
+			<item value="C_B"/>
+			<item value="numOfRunningTasks"/>
 			<item value="numOf"/>
 			<item value="refreshEarliestDeadlineTask"/>
-			<item value="C_B"/>
 			<item value="msg_ptr"/>
-			<item value="comput"/>
-			<item value="private"/>
-			<item value="msg"/>
-			<item value="messuage"/>
 		</list>
 		<list key="replacehistory">
 		</list>
