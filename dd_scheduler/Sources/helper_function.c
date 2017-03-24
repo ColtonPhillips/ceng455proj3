@@ -120,8 +120,14 @@ void synthetic_compute_ms(unsigned int ms){
 }
 
 // Get current elapsed time in ms
+
 unsigned int currentTime() {
 	TIME_STRUCT ts;
 	_time_get_elapsed(&ts);
 	return (unsigned int)( ts.SECONDS * (1000) + ts.MILLISECONDS);
+}
+#define UTILIZATION_TIMER_LENGTH 100
+_timer_id startUtilizationTimer(TIMER_NOTIFICATION_TIME_FPTR timerfunction, _timer_id * timer ) {
+	* timer = _timer_start_periodic_every(timerfunction,&timer,TIMER_ELAPSED_TIME_MODE,UTILIZATION_TIMER_LENGTH);
+	return * timer;
 }

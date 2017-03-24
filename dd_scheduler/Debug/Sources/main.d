@@ -1,4 +1,4 @@
-Sources/main.o: ../Sources/main.c \
+Sources/main.d: ../Sources/main.c \
  C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
  C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h \
  C:/project3-colton/dd_scheduler/SDK/platform/devices/fsl_device_registers.h \

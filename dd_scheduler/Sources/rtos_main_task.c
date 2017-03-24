@@ -91,7 +91,8 @@ void main_task(os_task_param_t task_init_data)
   	_task_create(0,DD_IDLE_TASK,0);
   	_task_create(0,DD_SCHEDULER_TASK,0);
   	_task_create(0,DD_GENERATOR_TASK,0);
-  	abortme();
+
+
   	// After task aborts, Scheduler runs long enough to create a system q,
   	// then it changes it's priority, so Generator gets a chance to run.
 }

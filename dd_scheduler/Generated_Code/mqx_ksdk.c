@@ -7,7 +7,7 @@
 **     Version     : Component 1.2.0, Driver 01.00, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-10, 00:34, # CodeGen: 10
+**     Date/Time   : 2017-03-24, 07:44, # CodeGen: 40
 **
 **     Copyright : 1997 - 2015 Freescale Semiconductor, Inc. 
 **     All Rights Reserved.
@@ -126,7 +126,7 @@ const TASK_TEMPLATE_STRUCT MQX_template_list[] =
     /* Stack size                     */  DD_MONITOR_TASK_STACK_SIZE,
     /* Task priority                  */  (PRIORITY_OSA_TO_RTOS(DD_MONITOR_TASK_PRIORITY)),
     /* Task name                      */  DD_MONITOR_TASK_NAME,
-    /* Task attributes                */  (0),
+    /* Task attributes                */  (MQX_FLOATING_POINT_TASK),
     /* Task parameter                 */  (uint32_t)(NULL),
     /* Task time slice                */  (uint32_t)(0U)
   },       

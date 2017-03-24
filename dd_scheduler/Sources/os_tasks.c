@@ -41,6 +41,7 @@ extern "C" {
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "helper_function.h"
 
+
 /*
 ** ===================================================================
 **     Callback    : dd_scheduler_task
@@ -52,6 +53,21 @@ extern "C" {
 */
 
 
+unsigned int schedule_exec_time = 0;
+void timer_incr_scheduler
+	(
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+	)
+{
+	printf("!");
+	schedule_exec_time += 1;
+}
+
+#define TIMER_TASK_PRIORITY 2
+#define TIMER_STACK_SIZE 4000
 
 #define LOW_USER_TASK_PRIORITY 25
 #define SCHEDULER_PRIORITY 15
@@ -60,8 +76,11 @@ int numOfRunningTasks = 0;
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
+	_timer_id timer;
+	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_scheduler,&timer);
 	_queue_id dd_qid = qopen(DD_QUEUE);
 	priorityset(SCHEDULER_PRIORITY); // PRIORITY IS NOW BELOW THE GENERATOR
+	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
 
 	// BLOCKS UNTIL GENERATOR BLOCKS WHEN IT SENDS A MESSAGE
 
@@ -234,47 +253,36 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 **     Returns : Nothing
 ** ===================================================================
 */
-#define TIMER_TASK_PRIORITY 2
-#define TIMER_STACK_SIZE 2000
-
 typedef struct my_periodic_task {
+	unsigned int template_index;
 	unsigned int execution;
 	unsigned int deadline;
 	unsigned int period;
 } PERIODIC_TASK, * PERIODIC_TASK_PTR;
 
 static void PeriodicallyAddTask(
-		_timer_id id,
-		void * data_ptr,
-		MQX_TICK_STRUCT_PTR tick_ptr) {
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+) {
 
-	PERIODIC_TASK_PTR pPeriodicTask = (PERIODIC_TASK_PTR) data_ptr;
-	dd_tcreate(DD_USER_TASK, pPeriodicTask->execution, pPeriodicTask->deadline);
-
-	_time_init_ticks(tick_ptr,0);
-	_time_add_msec_to_ticks(tick_ptr,pPeriodicTask->period);
-	_timer_start_periodic_every_ticks(PeriodicallyAddTask,pPeriodicTask,TIMER_KERNEL_TIME_MODE, tick_ptr);
+	PERIODIC_TASK_PTR pPeriodicTask = (PERIODIC_TASK_PTR) pData;
+	dd_tcreate(pPeriodicTask->template_index,
+			pPeriodicTask->execution,
+			pPeriodicTask->deadline);
 }
 
-
-#define NUM_OF_PERIODIC_TASKS 3
-MQX_TICK_STRUCT periodticks[NUM_OF_PERIODIC_TASKS];
-_timer_id periodtimes[NUM_OF_PERIODIC_TASKS];
-void PeriodTaskInit(PERIODIC_TASK_PTR pPeriodicTasks) {
-	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
+void PeriodTaskInit(PERIODIC_TASK_PTR pPeriodicTasks, unsigned int length) {
 	int i;
-	for (i = 0; i < NUM_OF_PERIODIC_TASKS; i++) {
-		MQX_TICK_STRUCT_PTR pTicks = &periodticks[i];
-		_timer_id * pTimer = &periodtimes[i];
-		_time_init_ticks(pTicks, 0);
-		_time_add_msec_to_ticks(pTicks, pPeriodicTasks[i].period);
-		*pTimer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&pPeriodicTasks[i],TIMER_KERNEL_TIME_MODE, pTicks);
+	for (i = 0; i < length; i++) {
+		_timer_start_periodic_every((TIMER_NOTIFICATION_TIME_FPTR)PeriodicallyAddTask,&pPeriodicTasks[i],TIMER_KERNEL_TIME_MODE, pPeriodicTasks[i].period);
 	}
 }
 
-void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks) {
+void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks, unsigned int length) {
 	int i;
-	for (i = 0; i < NUM_OF_PERIODIC_TASKS; i++) {
+	for (i = 0; i < length; i++) {
 		printf(" DL%d = %d  ", i, pPeriodicTasks[i].deadline);
 	}
 	printf("\n");
@@ -282,10 +290,10 @@ void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks) {
 
 //TESTS
 //#define SIMPLE_TEST
-#define PERIODIC_TEST
+//#define PERIODIC_TEST
+#define MONITORING_TEST
 
 // The task generator creates and tests tasks for the DD scheduler
-#define MONITORING_PERIOD 40000
 void generator_task(os_task_param_t task_init_data)
 {
 #ifdef SIMPLE_TEST
@@ -293,19 +301,103 @@ void generator_task(os_task_param_t task_init_data)
 	asrt(dd_tcreate(DD_USER_TASK, 100, 1500));
 	asrt(dd_tcreate(DD_USER_TASK, 200, 1500));
 	asrt(dd_tcreate(DD_USER_TASK, 100, 1500));
-	asrt(dd_tcreate(DD_MONITOR_TASK, 0, MONITORING_PERIOD));
 #endif
+
+
+#ifdef MONITORING_TEST
+	// Create Timer(s) for periodic tasks
+	PERIODIC_TASK periods[2] = 	{{DD_USER_TASK,100,400, 5000},
+								{DD_MONITOR_TASK, 1000, 1500, 3000}};
+	printPeriodTasks(periods, 2);
+	PeriodTaskInit(periods, 2);
+#endif
+
 
 #ifdef PERIODIC_TEST
 	// Create Timer(s) for periodic tasks
-	PERIODIC_TASK periods[NUM_OF_PERIODIC_TASKS] = {{100,4000, 5000},{150,4000, 11000},{200,10000, 15000}};
-	printPeriodTasks(periods);
-	PeriodTaskInit(periods);
+	PERIODIC_TASK periods[3] = 	{{DD_USER_TASK,100,4000, 5000},
+								{DD_USER_TASK,150,4000, 11000},
+								{DD_USER_TASK,200,10000, 15000},
+	};
+	printPeriodTasks(periods,3 );
+	PeriodTaskInit(periods, 3);
 #endif
 
 	while (1) {
 		_task_block();
 	}
+}
+
+
+
+/*
+** ===================================================================
+**     Callback    : idle_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+unsigned int idle_exec_time = 0;
+void timer_incr_idle
+	(
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+	)
+{
+	printf("*");
+	idle_exec_time += 1;
+}
+
+void idle_task(os_task_param_t task_init_data)
+{
+	_timer_id timer;
+	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_idle,&timer);
+
+	// Spin forever
+	while(1) {
+	}
+	abortme();
+
+}
+
+/*
+** ===================================================================
+**     Callback    : user_task
+**     Description : Task function entry.
+**     Parameters  :
+**       task_init_data - OS task parameter
+**     Returns : Nothing
+** ===================================================================
+*/
+
+unsigned int user_exec_time = 0;
+void timer_incr_user
+	(
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+	)
+{
+	printf("_");
+	user_exec_time += 1;
+}
+
+void user_task(os_task_param_t task_init_data)
+{
+	_timer_id timer;
+	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_user,&timer);
+
+	unsigned int executionTime = (unsigned int) task_init_data;
+	synthetic_compute_ms(executionTime);
+	bool b = dd_delete(_task_get_id());
+	if (!b) {println("DELETE FAILED");}
+	_timer_cancel(timer);
+	abortme();
 }
 
 /*
@@ -317,9 +409,26 @@ void generator_task(os_task_param_t task_init_data)
 **     Returns : Nothing
 ** ===================================================================
 */
+
+unsigned int monitor_exec_time = 0;
+void timer_incr_monitor
+	(
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+	)
+{
+	printf("~");
+	monitor_exec_time += 1;
+}
+
 void monitor_task(os_task_param_t task_init_data)
 {
-	synthetic_compute_ms(1300);
+	_timer_id timer;
+	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_monitor,&timer);
+
+	synthetic_compute_ms(task_init_data);
 
 	// Get Overdue and Active Tasks
 	TASK_NODE_PTR active_tasks_head_ptr  = NULL;
@@ -346,6 +455,9 @@ void monitor_task(os_task_param_t task_init_data)
 	if (in_right_button()) {
 		dd_tcreate(DD_USER_TASK,10000,23456);
 	}
+	float utilization = 1.0 -
+	  ((float) idle_exec_time / (float) (1 + schedule_exec_time + monitor_exec_time + user_exec_time));
+	printf("Utilization: %f\n", utilization);
 
 	// Free the memory my dude.
 	/*int i;
@@ -359,45 +471,7 @@ void monitor_task(os_task_param_t task_init_data)
 	// Delete this task from DD and schedule another one! :)
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("MONITOR DELETE FAILED");}
-	dd_tcreate(DD_MONITOR_TASK,0,MONITORING_PERIOD);
-	abortme();
-}
-
-/*
-** ===================================================================
-**     Callback    : idle_task
-**     Description : Task function entry.
-**     Parameters  :
-**       task_init_data - OS task parameter
-**     Returns : Nothing
-** ===================================================================
-*/
-void idle_task(os_task_param_t task_init_data)
-{
-
-	// Spin forever
-	while(1) {
-		//putchar('.');
-	}
-
-	abortme();
-}
-
-/*
-** ===================================================================
-**     Callback    : user_task
-**     Description : Task function entry.
-**     Parameters  :
-**       task_init_data - OS task parameter
-**     Returns : Nothing
-** ===================================================================
-*/
-void user_task(os_task_param_t task_init_data)
-{
-	unsigned int executionTime = (unsigned int) task_init_data;
-	synthetic_compute_ms(executionTime);
-	bool b = dd_delete(_task_get_id());
-	if (!b) {println("DELETE FAILED");}
+	_timer_cancel(timer);
 	abortme();
 }
 
