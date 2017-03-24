@@ -38,12 +38,8 @@ extern "C" {
 
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
-#include "GPIO.h"
-#include "RGB.h"
-#include "BTN.h"
-#include "MessagePool.h"
 #include "helper_function.h"
-#include <stdio.h>
+
 /* Initialization of Processor Expert components function prototype */
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
 extern void PEX_components_init(void);
@@ -64,6 +60,7 @@ void init_main_task() {
 	init_GPIO(); // init the input and output gpios
 	init_buttons(); // init the 2 buttons
 	init_RGB_light(); // blue light indicates the light system is on.
+	out_kill_lights();
 	init_message_pools(); // Initializes the TASK_LIST message pool and DD q
 }
 
@@ -72,10 +69,14 @@ void init_main_task() {
  * 10 MAINTASK_TASK
  * 11 DD_SCHEDULER_TASK
  * 12 DD_GENERATOR_TASK
- * 18 DD_USER_TASK
+ * 18 DD_USER_TASK (SCHEDULED TASKS)
  * 21 DD_IDLE_TASK
- * 24 DD_MONITOR_TASK
+ * 25 DD_MONITOR_TASK DD_USER_TASK (CREATED TASKS)
 */
+
+// But try to step through the execution when a new task is created and keep an eye
+// on the list as well as how the next running task gets selected and how does the
+// scheduler change the priority.
 
 void main_task(os_task_param_t task_init_data)
 {
@@ -83,15 +84,14 @@ void main_task(os_task_param_t task_init_data)
 #ifdef MainTask_PEX_RTOS_COMPONENTS_INIT
   PEX_components_init(); 
 #endif 
-  // ASK SAMAN WHEN THE EARLIEST IS KAM CAN SHOW UP
+
   	printf("\x1B[H\x1B[J"); // clear print window
-	 println("Main");
+	//printlnNoBlock("Main");
   	init_main_task();
-  	out_kill_lights();
-  	_task_create(0,DD_GENERATOR_TASK,0);
-  	_task_create(0,DD_SCHEDULER_TASK,0);
   	_task_create(0,DD_IDLE_TASK,0);
-  	_task_abort(_task_get_id());
+  	_task_create(0,DD_SCHEDULER_TASK,0);
+  	_task_create(0,DD_GENERATOR_TASK,0);
+  	abortme();
   	// After task aborts, Scheduler runs long enough to create a system q,
   	// then it changes it's priority, so Generator gets a chance to run.
 }

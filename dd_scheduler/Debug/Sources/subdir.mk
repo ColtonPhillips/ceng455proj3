@@ -9,7 +9,6 @@ C_SRCS += \
 ../Sources/GPIO.c \
 ../Sources/MessagePool.c \
 ../Sources/Priority.c \
-../Sources/Queues.c \
 ../Sources/RGB.c \
 ../Sources/access_functions.c \
 ../Sources/helper_function.c \
@@ -23,7 +22,6 @@ OBJS += \
 ./Sources/GPIO.o \
 ./Sources/MessagePool.o \
 ./Sources/Priority.o \
-./Sources/Queues.o \
 ./Sources/RGB.o \
 ./Sources/access_functions.o \
 ./Sources/helper_function.o \
@@ -37,7 +35,6 @@ C_DEPS += \
 ./Sources/GPIO.d \
 ./Sources/MessagePool.d \
 ./Sources/Priority.d \
-./Sources/Queues.d \
 ./Sources/RGB.d \
 ./Sources/access_functions.d \
 ./Sources/helper_function.d \

@@ -6,7 +6,7 @@
  */
 
 #include <stdlib.h>
-#include "gpio1.h"
+#include "GPIO.H"
 
 void init_RGB_light() {
 	// soft blue light indicates gp-io is initialized.

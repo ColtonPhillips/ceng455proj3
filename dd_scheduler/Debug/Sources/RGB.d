@@ -1,6 +1,6 @@
 Sources/RGB.o: ../Sources/RGB.c \
  C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
- C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
+ ../Sources/GPIO.H C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/clockMan1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/osa1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h \
@@ -67,6 +67,8 @@ Sources/RGB.o: ../Sources/RGB.c \
  C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
+
+../Sources/GPIO.H:
 
 C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h:
 

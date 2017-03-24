@@ -40,12 +40,7 @@ extern "C" {
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "helper_function.h"
-#include "access_functions.h"
-#include "MessagePool.h"
-#include "Priority.h"
-#include "RGB.h"
-#include <math.h>
-#include <timer.h>
+
 
 /*
 ** ===================================================================
@@ -81,7 +76,9 @@ void synthetic_compute_ms(unsigned int ms){
 	_time_add_msec_to_ticks(&Ticks, ms);
 	_timer_start_oneshot_after_ticks((TIMER_NOTIFICATION_TICK_FPTR)timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
 	// TIMER ELAPSED MODE ENSURES THE TIMER ONLY OCCURS WHEN THE USER TASK IS ACTUALLY RUNNING
-	while (flag){}
+	while (flag){
+		//putchar('*');
+	}
 }
 
 #define TASK_NODE_ARRAY_SIZE 16
@@ -171,11 +168,11 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 {
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
 	_queue_id dd_qid = qopen(DD_QUEUE);
+///	printTDNoBlock("SCHEDULER BEGIN",_task_get_id());
 	priorityset(15); // PRIORITY IS NOW BELOW THE GENERATOR
 
 	// BLOCKS UNTIL GENERATOR BLOCKS WHEN IT SENDS A MESSAGE
-
-	println("DB");
+//	printTDNoBlock("SCHEDULER START",_task_get_id());
 
 	// This starts out with an infinite timeout until it gets it's first task!
 	unsigned int deadlineTimeout = 0;
@@ -190,15 +187,21 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 	while (1) {
 		// Wait for deadlineTimeout ms for a message (forever if =0)
-		printf("RUN:%d\n", numOfRunningTasks);
+		if (earliestDeadlineTask != NULL) {
+			printf("RUNNING TASKS:%d\n", numOfRunningTasks);
+			printf("DEADLINE:%d\n",(int) deadlineTimeout);
+	//		printTDNoBlock("SLEEPING",earliestDeadlineTask->tid);
+		} else {
+//			println("NO TASK RUNNING");
+		}
+
 		MESSAGE_PTR msg_ptr = msgreceivetimeout(DD_QUEUE, deadlineTimeout);
-		println("DWAKE");
 
 		// v Handle the message v
 
-		// Message pointer is not a timeout, and there exists an already running task:
+		// > Message pointer is not a timeout, and there exists an already running task:
 		if (msg_ptr != NULL && earliestDeadlineTask != NULL) {
-			println("UPD8");
+//			println("UPD8");
 			// Update EDF so that it's deadline is fewer, and it's 'creation' is later
 			updateNodeWithRespectToTime(earliestDeadlineTask);
 		}
@@ -206,7 +209,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		// > Handle the deadline timeout case
 		if (msg_ptr == NULL) {
 			// TODO: add to overdue task
-			println("TIMEOUT");
+//			println("TIMEOUT");
 
 			// Turn the task off. abort the task. lower active task count
 			earliestDeadlineTask->deadline = NO_TASK;
@@ -229,8 +232,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		// > Handle the dd_tcreate message:
 		else if (msgsrc_equals_q(msg_ptr,TASK_CREATOR_QUEUE)) {
 
-			printf("%s",msg_ptr->DATA);
-
 			// put the sent task into the task list
 			bool success = insertIntoTaskList(task_node_array, msg_ptr->TASK_DATA);
 
@@ -241,19 +242,21 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			TASK_NODE_PTR prevEDFTask = earliestDeadlineTask;
 
 			// Since a task is added we have to refresh the EDF pointer in case the new task is high priority
-			//printf("HOME:%d LAST:%d\n",earliestDeadlineTask->deadline, prevEDFTask->deadline);
+
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
-			//printf("END:%d LAST:%d\n",earliestDeadlineTask->deadline, prevEDFTask->deadline);
+			TASK_NODE tnp0 = task_node_array[0];
+			TASK_NODE tnp1 = task_node_array[1];
+			TASK_NODE tnp2 = task_node_array[2];
+			TASK_NODE tnp3 = task_node_array[3];
+			printf("a");
 			// If new task is added successfully:
 			// 		-> raise the EDF task priority to 18
 			//		If lastEDF existed (was running), and isn't the same as the new task
 			// 			-> lower it's priority to 25
 			if (success) {
-				println("BUMPUP");
 				prioritysettask(earliestDeadlineTask->tid,SCHEDULED_USER_TASK_PRIORITY);
 				if (prevEDFTask != NULL && prevEDFTask != earliestDeadlineTask) {
 					prioritysettask(prevEDFTask->tid,LOW_USER_TASK_PRIORITY);
-					println("BUMPDWN");
 				}
 			}
 
@@ -278,8 +281,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		// > Handle dd_delete message
 		else if (msgsrc_equals_q(msg_ptr,TASK_DELETOR_QUEUE)) {
 
-			printf("%s", msg_ptr->DATA);
-
 			// Delete the sent task from the active running tasks
 			bool success = deleteFromTaskList(task_node_array, msg_ptr->TASK_DATA);
 
@@ -292,7 +293,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			// If successful deletion and an EDF now exists, set it to priority 18
 			if (success && earliestDeadlineTask != NULL) {
 				prioritysettask(earliestDeadlineTask->tid,SCHEDULED_USER_TASK_PRIORITY);
-				println("DEL RESCHEDULE");
+//				println("DEL RESCHEDULE");
 			}
 
 			// If an active task is available, update it's deadline and creation time, and set deadlineTimeout to its deadline
@@ -305,9 +306,10 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 				deadlineTimeout = 0;
 			}
 
-			// Allocate a return data message, populate it, and send
+			// Allocate a return data message, populate it, and send (preempting function)
 			UCHAR_PTR returnData;
 			if (success) {returnData = TaskDeletedString;} else {returnData = TaskDeletedFailedString;}
+			_time_delay(10);
 			msgpushdata(
 				DD_QUEUE, 			// src
 				TASK_DELETOR_QUEUE, // target
@@ -316,7 +318,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 		else if (msgsrc_equals_q(msg_ptr,ACTIVE_LIST_QUEUE)) {
 
-			printf("%s", msg_ptr->DATA);
+//			printf("%s", msg_ptr->DATA);
 
 			// We are done using the message now
 			_msg_free(msg_ptr);
@@ -330,9 +332,10 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			deadlineTimeout = earliestDeadlineTask->deadline;
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
-			// Allocate a return data message, populate it, and send
+			// Allocate a return data message, populate it, and send (preempting function)
 			UCHAR_PTR returnData;
 			if (1) {returnData = ActiveListPassedString;} else {returnData = ActiveListFailedString;}
+			_time_delay(10);
 			monitormsgpush(
 				DD_QUEUE, 			// src
 				TASK_DELETOR_QUEUE, // target
@@ -345,16 +348,9 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			//Copy a new chunk of memory the size of the active array
 			//
 		}
-
-		// ^ Message has been handled ^
-		printf("ED TID: %d, DL:%d \n",earliestDeadlineTask->tid, earliestDeadlineTask->deadline);
-		int i = 0;
-		while (i > 200) {
-			i++;
-		}
 	}
 	_msgq_close(dd_qid);
-	println("DE");
+//	println("DE");
 	abortme();
 }
 
@@ -388,15 +384,16 @@ static void PeriodicallyAddTask(
 }
 
 #define MONITORING_PERIOD 5000
+
 void generator_task(os_task_param_t task_init_data)
 {
 	// TODO: Create a timer for each periodic task instead of just one periodic task
-	println("GB");
+	//printTDNoBlock("GENERATOR BEGIN",_task_get_id());
 
 	// Start off with some aperiodic user tasks
-	dd_tcreate(DD_USER_TASK, 100, 60000);
-	dd_tcreate(DD_USER_TASK, 500, 50000);
-	dd_tcreate(DD_USER_TASK, 500, 30000);
+	t1 = dd_tcreate(DD_USER_TASK, 100, 60000);
+	t2 = dd_tcreate(DD_USER_TASK, 500, 50000);
+	t3 = dd_tcreate(DD_USER_TASK, 500, 30000);
 
 	// Create a monitor task.
 	//dd_tcreate(DD_MONITOR_TASK,0,MONITORING_PERIOD);
@@ -414,8 +411,9 @@ void generator_task(os_task_param_t task_init_data)
 	periodic_task_timer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&periodic_task_timer,TIMER_KERNEL_TIME_MODE, &tick1);
 #endif
 
-	println("GE");
-	abortme();
+	while (1) {
+		_task_block();
+	}
 }
 
 /*
@@ -482,12 +480,14 @@ void monitor_task(os_task_param_t task_init_data)
 */
 void idle_task(os_task_param_t task_init_data)
 {
-	println("IB");
+	//printTD("IDLE BEGIN",_task_get_id());
 
 	// Spin forever
-	while(1) {}
+	while(1) {
+		//putchar('.');
+	}
 
-	println("IE");
+	//printTD("IDLE ENDED",_task_get_id());
 	abortme();
 }
 
@@ -502,12 +502,12 @@ void idle_task(os_task_param_t task_init_data)
 */
 void user_task(os_task_param_t task_init_data)
 {
-	println("UB");
-	printf("U ID: %d\n", (int) _task_get_id());
+	//printTD("USER BEGIN",_task_get_id());
 	unsigned int executionTime = (unsigned int) task_init_data;
 	synthetic_compute_ms(executionTime);
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("DELETE FAILED");}
+	//printTD("USER ENDED",_task_get_id());
 	abortme();
 }
 

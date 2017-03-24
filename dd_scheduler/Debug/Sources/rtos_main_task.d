@@ -82,14 +82,16 @@ Sources/rtos_main_task.o: ../Sources/rtos_main_task.c \
  C:/project3-colton/dd_scheduler/Generated_Code/DD_Monitor.h \
  C:/project3-colton/dd_scheduler/Generated_Code/DD_Generator.h \
  C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
- ../Sources/rtos_main_task.h ../Sources/os_tasks.h ../Sources/GPIO.h \
- ../Sources/RGB.h ../Sources/BTN.h ../Sources/MessagePool.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h \
+ ../Sources/rtos_main_task.h ../Sources/os_tasks.h \
  ../Sources/helper_function.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h \
+ ../Sources/access_functions.h ../Sources/MessagePool.h ../Sources/GPIO.h \
+ ../Sources/RGB.h ../Sources/Priority.h ../Sources/BTN.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
@@ -261,16 +263,6 @@ C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h:
 
 ../Sources/os_tasks.h:
 
-../Sources/GPIO.h:
-
-../Sources/RGB.h:
-
-../Sources/BTN.h:
-
-../Sources/MessagePool.h:
-
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h:
-
 ../Sources/helper_function.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
@@ -280,3 +272,19 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h:
+
+../Sources/access_functions.h:
+
+../Sources/MessagePool.h:
+
+../Sources/GPIO.h:
+
+../Sources/RGB.h:
+
+../Sources/Priority.h:
+
+../Sources/BTN.h:

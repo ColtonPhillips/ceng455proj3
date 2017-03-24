@@ -18,6 +18,12 @@ _mqx_uint priorityget() {
 	return PRIORITY_RTOS_TO_OSA(priority);
 }
 
+_mqx_uint prioritygettask(_task_id taskid) {
+	_mqx_uint priority;
+	_task_get_priority(taskid,&priority);
+	return PRIORITY_RTOS_TO_OSA(priority);
+}
+
 void priorityset(_mqx_uint newpriority) {
 	_mqx_uint oldpriority;
 	_task_set_priority(_task_get_id(),PRIORITY_OSA_TO_RTOS(newpriority),&oldpriority);

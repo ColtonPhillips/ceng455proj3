@@ -4,7 +4,7 @@
  *  Created on: Mar 10, 2017
  *      Author: coltonp
  */
-#include "gpio1.h"
+#include "GPIO.h"
 void init_buttons() {
 // maybe do nothing?	GPIO_DRV_GetPinDir()
 }

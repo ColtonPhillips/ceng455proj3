@@ -8,12 +8,26 @@
 #ifndef SOURCES_HELPER_FUNCTION_H_
 #define SOURCES_HELPER_FUNCTION_H_
 #include <stdbool.h>
-#include "RGB.h"
+#include <stdio.h>
 #include <mqx.h>
+#include <math.h>
+#include <message.h>
+#include <timer.h>
+#include "access_functions.h"
+#include "GPIO.h"
+#include "RGB.h"
+#include "Priority.h"
+#include "BTN.h"
+#include <mqx.h>
+#include "MessagePool.h"
+void printTD(char * msg,_task_id t);
+void printTDNoBlock(char * msg,_task_id t);
 void printlnU(unsigned char * str);
 void println(char * str);
+void printlnNoBlock(char * str);
 bool asrt(bool b);
 bool asrtmsg(char * str, bool b);
 void have_fun();
+void spin(unsigned int n);
 
 #endif /* SOURCES_HELPER_FUNCTION_H_ */

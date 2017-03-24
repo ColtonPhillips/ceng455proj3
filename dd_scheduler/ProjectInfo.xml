@@ -266,7 +266,6 @@
       <PathName>C:\project3-colton\dd_scheduler\Sources\GPIO.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\MessagePool.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Priority.c</PathName>
-      <PathName>C:\project3-colton\dd_scheduler\Sources\Queues.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\RGB.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\access_functions.c</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\helper_function.c</PathName>
@@ -428,7 +427,6 @@
       <PathName>C:\project3-colton\dd_scheduler\Sources\Events.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\MessagePool.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Priority.h</PathName>
-      <PathName>C:\project3-colton\dd_scheduler\Sources\Queues.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\RGB.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\access_functions.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\helper_function.h</PathName>
