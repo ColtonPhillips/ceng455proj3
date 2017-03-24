@@ -60,7 +60,7 @@ void init_main_task() {
 	init_GPIO(); // init the input and output gpios
 	init_buttons(); // init the 2 buttons
 	init_RGB_light(); // blue light indicates the light system is on.
-	out_kill_lights();
+	out_kill_lights(); // but we turn it off.
 	init_message_pools(); // Initializes the TASK_LIST message pool and DD q
 }
 

@@ -21,10 +21,8 @@
 #include <mqx.h>
 #include "MessagePool.h"
 void printTD(char * msg,_task_id t);
-void printTDNoBlock(char * msg,_task_id t);
 void printlnU(unsigned char * str);
 void println(char * str);
-void printlnNoBlock(char * str);
 bool asrt(bool b);
 bool asrtmsg(char * str, bool b);
 void have_fun();

@@ -59,10 +59,6 @@ extern "C" {
 **     Returns : Nothing
 ** ===================================================================
 */
-_task_id t1;
-_task_id t2;
-_task_id t3;
-
 void dd_scheduler_task(os_task_param_t task_init_data);
 
 

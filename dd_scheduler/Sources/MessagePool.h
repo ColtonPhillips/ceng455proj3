@@ -66,7 +66,6 @@ typedef struct my_monitor_messsage
 	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as ActiveTaskPassedString
 } MONITOR_MESSAGE, * MONITOR_MESSAGE_PTR;
 
-
 // message pool is for task messages
 // monitor message pools is for monitor messages
 _pool_id message_pool;

@@ -14,23 +14,12 @@
 void printlnU(unsigned char * str) {
 #ifndef NOPRINT
 	printf("%s\n",str);
-  //	_time_delay_ticks(10);
 #endif
 }
 
 void println(char * str) {
 #ifndef NOPRINT
 	printf("%s\n",(unsigned char * )str);
-  	//_time_delay_ticks(10);
-#endif
-}
-
-void printlnNoBlock(char * str) {
-#ifndef NOPRINT
-	printf("%s\n",(unsigned char * )str);
-	fflush(stdout);
-  	printf("");printf("");printf("");printf("");printf("");printf("");printf("");printf("");
-  	printf("");printf("");printf("");printf("");printf("");printf("");printf("");printf("");
 #endif
 }
 
@@ -43,22 +32,6 @@ void printTD(char * msg,_task_id t) {
 	_task_get_priority(t, &priority);
   	printf("Priority: %d (%d)\n",(int)prioritygettask(t), (int)priority);
   	printf("\n");
-  //	_time_delay_ticks(10);
-#endif
-}
-
-void printTDNoBlock(char * msg,_task_id t) {
-#ifndef NOPRINT
-  	printf("%s\n",msg);
-  	TD_STRUCT_PTR pTD = _task_get_td(t);
-  	printf("ID: %d\n",(int)pTD->TASK_ID);
-	_mqx_uint priority;
-	_task_get_priority(t, &priority);
-  	printf("Priority: %d (%d)\n",(int)prioritygettask(t), (int)priority);
-  	printf("\n");
-	fflush(stdout);
-  	printf("");printf("");printf("");printf("");printf("");printf("");printf("");printf("");
-  	printf("");printf("");printf("");printf("");printf("");printf("");printf("");printf("");
 #endif
 }
 

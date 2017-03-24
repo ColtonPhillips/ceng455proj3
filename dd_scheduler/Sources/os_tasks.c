@@ -41,7 +41,6 @@ extern "C" {
 /* User includes (#include below this line is not maintained by Processor Expert) */
 #include "helper_function.h"
 
-
 /*
 ** ===================================================================
 **     Callback    : dd_scheduler_task
@@ -55,17 +54,6 @@ extern "C" {
 // IS CALLED WHEN TIMER EXPIRES
 void timer_callback(_timer_id t, void* dataptr, unsigned int seconds, unsigned int miliseconds){
     (*(bool*)dataptr) = false;
-}
-
-// CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
-// NOT CURRENTLY USED
-void synthetic_compute_ticks(unsigned int ticks){
-	bool flag = true;
-	MQX_TICK_STRUCT Ticks;
-	_time_init_ticks(&Ticks, ticks);
-	_timer_start_oneshot_after_ticks((TIMER_NOTIFICATION_TICK_FPTR)timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
-	// TIMER ELAPSED MODE ENSURES THE TIMER ONLY OCCURS WHEN THE USER TASK IS ACTUALLY RUNNING
-	while (flag){}
 }
 
 // CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
@@ -84,7 +72,6 @@ void synthetic_compute_ms(unsigned int ms){
 #define TASK_NODE_ARRAY_SIZE 16
 #define NO_TASK 0
 int numOfRunningTasks = 0;
-// TODO: getActiveList() , getOverDueList()
 
 // Set the entire array of structs' deadlines to zero. (therefore they are not active tasks)
 void zeroTaskNodeArray(TASK_NODE_PTR task_node_array) {
@@ -96,7 +83,6 @@ void zeroTaskNodeArray(TASK_NODE_PTR task_node_array) {
 
 // Insert into the first spot with deadline == NO_TASK 		O(n)
 bool insertIntoTaskList(TASK_NODE_PTR task_list_array, TASK_NODE insertedTask) {
-	// todo: keep track of length of list being used.
 	int i = 0;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].deadline == NO_TASK) {
@@ -127,15 +113,12 @@ void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_
 	unsigned int DL_min = 999999999; // sufficiently large enough number
 	*ppEDF = NULL; // return null if the task list is empty
 	int i = 0;
-	//printf("\n");
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		if (task_list_array[i].deadline < DL_min && task_list_array[i].deadline != NO_TASK) {
 			DL_min = task_list_array[i].deadline;
 			*ppEDF = (TASK_NODE_PTR) &(task_list_array[i]);
-//			printf("%d ", DL_min);
 		}
 	}
-//	printf("\nWORK?:%d\n",(*ppEDF)->deadline);
 }
 
 // This is called during scheduling points on tasks to update creation time to now and deadline to be smaller than before.
@@ -168,7 +151,7 @@ void printActiveTasksPriorites(TASK_NODE_PTR task_node_array) {
 		if (task_node_array[i].deadline != NO_TASK) {
 			_mqx_uint priority;
 			_task_get_priority(task_node_array[i].tid, &priority);
-			printf("T %d   D %d  Actual_DL %d    ",(int)task_node_array[i].tid, (int)task_node_array[i].deadline,(int) priority);
+			printf("T %d   D %d  Actual_P %d    ",(int)task_node_array[i].tid, (int)task_node_array[i].deadline,(int) priority);
 		}
 	}
 	printf("\n");
@@ -180,11 +163,9 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 {
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
 	_queue_id dd_qid = qopen(DD_QUEUE);
-///	printTDNoBlock("SCHEDULER BEGIN",_task_get_id());
 	priorityset(15); // PRIORITY IS NOW BELOW THE GENERATOR
 
 	// BLOCKS UNTIL GENERATOR BLOCKS WHEN IT SENDS A MESSAGE
-//	printTDNoBlock("SCHEDULER START",_task_get_id());
 
 	// This starts out with an infinite timeout until it gets it's first task!
 	unsigned int deadlineTimeout = 0;
@@ -195,7 +176,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 	// The currently executing task is stored here as a pointer and is NULL if there is no EDF (aka set deadlineTimeout to 0)
 	TASK_NODE_PTR earliestDeadlineTask = NULL;
-
 
 	while (1) {
 		// Wait for deadlineTimeout ms for a message (forever if =0)
@@ -252,10 +232,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			// Since a task is added we have to refresh the EDF pointer in case the new task is high priority
 
 			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
-			TASK_NODE tnp0 = task_node_array[0];
-			TASK_NODE tnp1 = task_node_array[1];
-			TASK_NODE tnp2 = task_node_array[2];
-			TASK_NODE tnp3 = task_node_array[3];
 			// If new task is added successfully:
 			// 		-> raise the EDF task priority to 18
 			//		If lastEDF existed (was running), and isn't the same as the new task
@@ -324,8 +300,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 		else if (msgsrc_equals_q(msg_ptr,ACTIVE_LIST_QUEUE)) {
 
-//			printf("%s", msg_ptr->DATA);
-
 			// We are done using the message now
 			_msg_free(msg_ptr);
 
@@ -336,7 +310,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			// the EDF is surely the monitor task: update the deadlineTimeout
 			updateNodeWithRespectToTime(earliestDeadlineTask);
 			deadlineTimeout = earliestDeadlineTask->deadline;
-			refreshEarliestDeadlineTask(&earliestDeadlineTask, task_node_array);
 
 			// Allocate a return data message, populate it, and send (preempting function)
 			UCHAR_PTR returnData;
@@ -358,7 +331,6 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 		printActiveTasksPriorites(task_node_array);
 	}
 	_msgq_close(dd_qid);
-//	println("DE");
 	abortme();
 }
 
@@ -374,56 +346,64 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 #define TIMER_TASK_PRIORITY 2
 #define TIMER_STACK_SIZE 2000
 
-//#define WILL_CREATE_PERIODIC_TASKS
-#define PERIODIC_PERIOD 800
-#define PERIODIC_EXECUTION 400
+typedef struct my_periodic_task {
+	unsigned int execution;
+	unsigned int deadline;
+	unsigned int period;
+} PERIODIC_TASK, * PERIODIC_TASK_PTR;
 
 static void PeriodicallyAddTask(
 		_timer_id id,
 		void * data_ptr,
 		MQX_TICK_STRUCT_PTR tick_ptr) {
-	//println("Periodic");
 
-	dd_tcreate(DD_USER_TASK, PERIODIC_EXECUTION, PERIODIC_PERIOD);
+	PERIODIC_TASK_PTR pPeriodicTask = (PERIODIC_TASK_PTR) data_ptr;
+	dd_tcreate(DD_USER_TASK, pPeriodicTask->execution, pPeriodicTask->deadline);
 
 	_time_init_ticks(tick_ptr,0);
-	_time_add_msec_to_ticks(tick_ptr,PERIODIC_PERIOD);
-	*(_timer_id * )data_ptr = _timer_start_periodic_every_ticks(PeriodicallyAddTask,0,TIMER_KERNEL_TIME_MODE, tick_ptr);
+	_time_add_msec_to_ticks(tick_ptr,pPeriodicTask->period);
+	_timer_start_periodic_every_ticks(PeriodicallyAddTask,pPeriodicTask,TIMER_KERNEL_TIME_MODE, tick_ptr);
 }
 
-#define MONITORING_PERIOD 5000
-/*
-typedef struct my_periodic_task {
-	unsigned int execution;
-	unsigned int deadline;
-} PERIODIC_TASK, * PERIODIC_TASK;
+#define NUM_OF_PERIODIC_TASKS 3
+PERIODIC_TASK periods[NUM_OF_PERIODIC_TASKS] = {{10,5000, 10000},{15,4000, 11000},{20,10000, 15000}};
+MQX_TICK_STRUCT periodticks[NUM_OF_PERIODIC_TASKS];
+_timer_id periodtimes[NUM_OF_PERIODIC_TASKS];
 
-*/
+void PeriodTaskInit(PERIODIC_TASK_PTR pPeriodicTasks) {
+	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
+	int i;
+	for (i = 0; i < NUM_OF_PERIODIC_TASKS; i++) {
+		MQX_TICK_STRUCT_PTR pTicks = &periodticks[i];
+		_timer_id * pTimer = &periodtimes[i];
+		_time_init_ticks(pTicks, 0);
+		_time_add_msec_to_ticks(pTicks, pPeriodicTasks[i].period);
+		*pTimer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&pPeriodicTasks[i],TIMER_KERNEL_TIME_MODE, pTicks);
+	}
+}
 
+void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks) {
+	int i;
+	for (i = 0; i < NUM_OF_PERIODIC_TASKS; i++) {
+		printf(" DL%d = %d  ", i, pPeriodicTasks[i].deadline);
+	}
+	printf("\n");
+}
+
+#define MONITORING_PERIOD 10000
+//#define WILL_CREATE_PERIODIC_TASKS
 void generator_task(os_task_param_t task_init_data)
 {
-	// TODO: Create a timer for each periodic task instead of just one periodic task
-	//printTDNoBlock("GENERATOR BEGIN",_task_get_id());
-
 	// Start off with some aperiodic user tasks
-	t1 = dd_tcreate(DD_USER_TASK, 100, 60000);
-	t2 = dd_tcreate(DD_USER_TASK, 500, 50000);
-	t3 = dd_tcreate(DD_USER_TASK, 500, 30000);
-
-	// Create a monitor task.
-	//dd_tcreate(DD_MONITOR_TASK,0,MONITORING_PERIOD);
-
+	dd_tcreate(DD_USER_TASK, 100, 600);
+	dd_tcreate(DD_USER_TASK, 200, 500);
+	dd_tcreate(DD_USER_TASK, 100, 300);
+	dd_tcreate(DD_MONITOR_TASK, 0, MONITORING_PERIOD);
 
 #ifdef WILL_CREATE_PERIODIC_TASKS
-//	struct task_def c[10] = {{1,2,4,5}, {1,3,5}}
-
-	// Create a Timer(s) for periodic tasks
-	MQX_TICK_STRUCT tick1;
-	_timer_id periodic_task_timer;
-	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
-	_time_init_ticks(&tick1, 0);
-	_time_add_msec_to_ticks(&tick1, PERIODIC_PERIOD);
-	periodic_task_timer = _timer_start_periodic_every_ticks(PeriodicallyAddTask,&periodic_task_timer,TIMER_KERNEL_TIME_MODE, &tick1);
+	// Create Timer(s) for periodic tasks
+	printPeriodTasks(periods);
+	PeriodTaskInit(periods);
 #endif
 
 	while (1) {
@@ -452,9 +432,8 @@ void monitor_task(os_task_param_t task_init_data)
 	dd_return_active_list(&active_tasks_head_ptr, &active_size);
 	dd_return_overdue_list(&overdue_tasks_head_ptr, &overdue_size);
 
-
-
 	// Set Red Light if any tasks overdue
+	out_kill_lights();
 	if (overdue_tasks_head_ptr != NULL) {
 		red_light();
 	}
