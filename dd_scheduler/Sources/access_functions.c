@@ -59,6 +59,7 @@ _task_id dd_tcreate(
 
 bool dd_delete(unsigned int task_id) {
 	// Open a message queue
+	printf("!!!");
 	_queue_id deletor_qid  = qopen(TASK_DELETOR_QUEUE);
 
 	// Allocate, populate and send a msg

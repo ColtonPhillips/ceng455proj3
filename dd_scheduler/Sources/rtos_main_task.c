@@ -86,7 +86,6 @@ void main_task(os_task_param_t task_init_data)
 #endif 
 
   	printf("\x1B[H\x1B[J"); // clear print window
-	//printlnNoBlock("Main");
   	init_main_task();
   	_task_create(0,DD_IDLE_TASK,0);
   	_task_create(0,DD_SCHEDULER_TASK,0);

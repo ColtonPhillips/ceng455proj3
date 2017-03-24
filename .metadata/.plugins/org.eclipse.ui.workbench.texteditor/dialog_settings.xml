@@ -13,8 +13,9 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="Spin" key="selection"/>
+		<item value="MSG_ERROR_BASE" key="selection"/>
 		<list key="findhistory">
+			<item value="MSG_ERROR_BASE"/>
 			<item value="spin"/>
 			<item value="CR"/>
 			<item value="CR\n"/>
@@ -22,7 +23,6 @@
 			<item value="C_B"/>
 			<item value="numOfRunningTasks"/>
 			<item value="numOf"/>
-			<item value="refreshEarliestDeadlineTask"/>
 		</list>
 		<list key="replacehistory">
 		</list>
