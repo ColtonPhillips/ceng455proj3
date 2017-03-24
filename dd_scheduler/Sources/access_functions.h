@@ -10,6 +10,17 @@
 
 #include "helper_function.h"
 #include "MessagePool.h"
+#include <mutex.h>
+#include "Tasks.h"
+MUTEX_STRUCT accessmutex;
+MUTEX_ATTR_STRUCT mutexattr;
+struct TASK_NODE;
+
+void init_mutex();
+
+
+// The following is copied from the Lab 3 Documentation:
+
 
 // The DD Scheduler uses one data structure to store task lists
 

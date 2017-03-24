@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "helper_function.h"
 
-// helper function to open a Q
+// Open a Q
 _queue_id qopen(_queue_number QNUMBER) {
 	_queue_id qid  = _msgq_open(QNUMBER, 0);
 	if (qid == 0) {
@@ -18,7 +18,7 @@ _queue_id qopen(_queue_number QNUMBER) {
 	return qid;
 }
 
-// helper function to allocate a message
+// Allocate a task type message
 MESSAGE_PTR msgalloc() {
 	MESSAGE_PTR msg_ptr = (MESSAGE_PTR)_msg_alloc(message_pool);
 	if (msg_ptr == NULL) {
@@ -28,7 +28,7 @@ MESSAGE_PTR msgalloc() {
 	return msg_ptr;
 }
 
-// helper function to allocate a message
+// Allocate a monitor type message
 MONITOR_MESSAGE_PTR monitormsgalloc() {
 	MONITOR_MESSAGE_PTR mon_msg_ptr = (MONITOR_MESSAGE_PTR)_msg_alloc(monitor_message_pool);
 	if (mon_msg_ptr == NULL) {
@@ -38,7 +38,7 @@ MONITOR_MESSAGE_PTR monitormsgalloc() {
 	return mon_msg_ptr;
 }
 
-/* helper function: create a message pool */
+// The main task initializes a group of message pools (2)
 #define NUM_OF_MESSAGES 80
 void init_message_pools() {
 	   message_pool = _msgpool_create(sizeof(MESSAGE),
@@ -56,7 +56,7 @@ void init_message_pools() {
 	   }
 }
 
-// helper function to populate a task list in fewer keystrokes.
+// Create a task node (copy not pointer)
 TASK_NODE taskNodeFactory(
 		unsigned int taskid,
 		unsigned int deadline,
@@ -71,7 +71,7 @@ TASK_NODE taskNodeFactory(
 	return tl;
 }
 
-// helper function to send message which has been set up with a target prior
+// Send a task type message which has a given target
 void msgsend(MESSAGE_PTR msg_ptr) {
 	if (!_msgq_send(msg_ptr)) {
 		printf("\nCould not send a message\n");
@@ -80,6 +80,7 @@ void msgsend(MESSAGE_PTR msg_ptr) {
 	}
 }
 
+// Send a monitor type message which has a given target
 void monitormsgsend(MONITOR_MESSAGE_PTR mon_msg_ptr) {
 	if (!_msgq_send(mon_msg_ptr)) {
 		printf("\nCould not send a monitor message\n");
@@ -88,39 +89,40 @@ void monitormsgsend(MONITOR_MESSAGE_PTR mon_msg_ptr) {
 	}
 }
 
-// helper function to populate a message in fewer keystrokes (source QNumber, target QNumber, task list, and string msg data)
+// Populate a monitor type pMsg so it's ready to be sent
 void monitormsgpop(
-		MONITOR_MESSAGE_PTR mon_msg_ptr,
+		MONITOR_MESSAGE_PTR pMonMsg,
 		_queue_number qNumberSource,
 		_queue_number qNumberTarget,
 		TASK_NODE_PTR taskHead_ptr,
 		unsigned int size,
 		unsigned char * data)
 {
-	mon_msg_ptr->HEADER.SOURCE_QID = _msgq_get_id(0, qNumberSource);
-	mon_msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
-	mon_msg_ptr->HEADER.SIZE = sizeof(MONITOR_MESSAGE);
-	mon_msg_ptr->monitor_data.task_list_head = taskHead_ptr;
-	mon_msg_ptr->monitor_data.task_list_size = size;
-	strcpy((char * )mon_msg_ptr->DATA, (char * ) data);
+	pMonMsg->HEADER.SOURCE_QID = _msgq_get_id(0, qNumberSource);
+	pMonMsg->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
+	pMonMsg->HEADER.SIZE = sizeof(MONITOR_MESSAGE);
+	pMonMsg->monitor_data.task_list_head = taskHead_ptr;
+	pMonMsg->monitor_data.task_list_size = size;
+	strcpy((char * )pMonMsg->DATA, (char * ) data);
 }
 
+// Populate a task type pMsg so it's ready to be sent
 void msgpop(
-		MESSAGE_PTR msg_ptr,
+		MESSAGE_PTR pMsg,
 		_queue_number qNumberSource,
 		_queue_number qNumberTarget,
 		TASK_NODE task,
 		unsigned char * data)
 {
-	msg_ptr->HEADER.SOURCE_QID = _msgq_get_id(0, qNumberSource);
-	msg_ptr->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
-	msg_ptr->HEADER.SIZE = sizeof(MESSAGE);
-	msg_ptr->TASK_DATA = task;
-	strcpy((char * )msg_ptr->DATA, (char * ) data);
+	pMsg->HEADER.SOURCE_QID = _msgq_get_id(0, qNumberSource);
+	pMsg->HEADER.TARGET_QID = _msgq_get_id(0, qNumberTarget);
+	pMsg->HEADER.SIZE = sizeof(MESSAGE);
+	pMsg->TASK_DATA = task;
+	strcpy((char * )pMsg->DATA, (char * ) data);
 }
 
 
-// Push a message to the target qid that includes an actually important and populated task (usually to DD or Monitor)
+// Make and send a task type message
 void msgpushtask(
 		_queue_number qNumberSource,
 		_queue_number qNumberTarget,
@@ -139,6 +141,7 @@ void msgpushtask(
 	//the memory is not to be freed by the creator of msg
 }
 
+// Make and send a monitor type message
 void monitormsgpush(
 		_queue_number qNumberSource,
 		_queue_number qNumberTarget,
@@ -158,7 +161,7 @@ void monitormsgpush(
 	//the memory is not to be freed by the creator of msg
 }
 
-// Just fill the tasklist with anything. It's not important for some messages, like the ones DD sends to access functions.
+// Make and send a task type message, where the only important field is DATA
 void msgpushdata(_queue_number qNumberSource, _queue_number qNumberTarget, unsigned char * data) {
 	msgpushtask(
 		qNumberSource,
@@ -167,7 +170,7 @@ void msgpushdata(_queue_number qNumberSource, _queue_number qNumberTarget, unsig
 		data);
 }
 
-// helper function to receive message of type QTYPE
+// Receive a task type message
 MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), 0);
 	if (msg_ptr == NULL) {
@@ -178,7 +181,7 @@ MESSAGE_PTR msgreceive(_queue_number QNUMBER) {
 	return msg_ptr;
 }
 
-// helper function to receive monitor message of type QTYPE
+// Receive a monitor type message
 MONITOR_MESSAGE_PTR monitormsgreceive(_queue_number QNUMBER) {
 	MONITOR_MESSAGE_PTR mon_msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), 0);
 	if (mon_msg_ptr == NULL) {
@@ -189,7 +192,7 @@ MONITOR_MESSAGE_PTR monitormsgreceive(_queue_number QNUMBER) {
 	return mon_msg_ptr;
 }
 
-// Receive with a ms value as a timeout argument
+// Receive a task type message with a timeout
 MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
 	MESSAGE_PTR msg_ptr = _msgq_receive(_msgq_get_id(0,QNUMBER), timeout);
 	if (msg_ptr == NULL) {
@@ -199,12 +202,12 @@ MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
 	return msg_ptr;
 }
 
-// helper function to see if a msg ptr has same target qid as QTYPE
+// helper function to see if a msg ptr has same target qid as _queue_number QTYPE
 bool msgtarget_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER) {
 	return (msg_ptr->HEADER.TARGET_QID == _msgq_get_id(0, QNUMBER));
 }
 
-// helper function to see if a msg ptr has same source qid as QTYPE
+// helper function to see if a msg ptr has same source qid as _queue_number QTYPE
 bool msgsrc_equals_q(MESSAGE_PTR msg_ptr, _queue_number QNUMBER) {
 	return (msg_ptr->HEADER.SOURCE_QID == _msgq_get_id(0, QNUMBER));
 }

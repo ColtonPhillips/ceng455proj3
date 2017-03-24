@@ -24,9 +24,9 @@
 	</section>
 	<section name="PDOMSearchPage">
 	</section>
-	<section name="RenameInformationPopup">
-	</section>
 	<section name="NewClassWizardPage">
+	</section>
+	<section name="RenameInformationPopup">
 	</section>
 	<section name="CRenameRefactoringInputPage">
 	</section>

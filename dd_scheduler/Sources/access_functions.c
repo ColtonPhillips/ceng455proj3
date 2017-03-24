@@ -8,17 +8,42 @@
 #include "access_functions.h"
 
 #define ACCESS_ERROR 0
+#define ACCESS_FAIL 0
 #define ACCESS_PASS 1
 
+#define __NOPRINT
+
+// Mutex is initialized by the main task
+void init_mutex(){
+	//Initialize mutex attributes:
+		if (_mutatr_init(&mutexattr) != MQX_OK) {
+			printf("mutex attr init failed");
+			_mqx_exit(0);
+		}
+		// Initialize Mutex
+		if (_mutex_init(&accessmutex,&mutexattr) != MQX_OK) {
+			printf("Mutex failed to init.");
+			_mqx_exit(0);
+		}
+}
+
+// Generator creates tasks as does the monitor refresh itself
 _task_id dd_tcreate(
 		unsigned int template_index,
-		unsigned int execution,// in relative ms
-		unsigned int deadline) // in relative ms
+		unsigned int elapsed_execution,// in  ms
+		unsigned int elapsed_deadline) // in  ms
 {
-	// Open a message queue
-	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
+	lock(&accessmutex);
 
-	_task_id this_task_id = _task_create(0,template_index,execution);
+	// Open a message queue and create a task
+	_queue_id creator_qid  = qopen(TASK_CREATOR_QUEUE);
+	_task_id this_task_id = _task_create(0,template_index,elapsed_execution);
+
+#ifndef __NOPRINT
+
+	printTD("TASK CREATED",this_task_id);
+
+#endif
 
 	// Allocate, populate and send a msg
 	msgpushtask(
@@ -26,35 +51,39 @@ _task_id dd_tcreate(
 			DD_QUEUE,			// target
 			taskNodeFactory(	// the new task
 				this_task_id,
-				deadline, // relative
+				elapsed_deadline, // relative
 				template_index,
 				currentTime()), // creation time
 			(unsigned char *)"CR\n"); // The Data
 
 	// Wait for reply at the q above
-	MESSAGE_PTR msg_ptr = msgreceive(TASK_CREATOR_QUEUE);
+	MESSAGE_PTR pMsg = msgreceive(TASK_CREATOR_QUEUE);
 
 	// Destroy the Q
 	_msgq_close(creator_qid);
 
-	bool taskAdded = false;
-	if (strcmp((char * ) msg_ptr->DATA, (char * )TaskCreatedString) == 0) {
-		taskAdded = true;
-	}
+	// Check return code status
+	bool taskAdded = strsame(pMsg->DATA,TaskCreatedString);
 
 	// free the message
-	_msg_free(msg_ptr);
+	_msg_free(pMsg);
+
+	unlock(&accessmutex);
 
 	//Returns taskID of created task if task actually added to DD scheduler otherwise error.
  	if (!taskAdded) return ACCESS_ERROR;
 	return this_task_id;
 }
 
+// User Task, Monitor Task delete themselves using this function
 bool dd_delete(unsigned int task_id) {
+
+	lock(&accessmutex);
+
 	// Open a message queue
 	_queue_id deletor_qid  = qopen(TASK_DELETOR_QUEUE);
 
-	// Allocate, populate and send a msg
+	// Allocate, populate and send a msg (with some unimportant message data)
 	msgpushtask(
 			TASK_DELETOR_QUEUE, // src
 			DD_QUEUE,			// target
@@ -66,24 +95,25 @@ bool dd_delete(unsigned int task_id) {
 			(unsigned char *)"DEL\n"); // The Data
 
 	// Wait for reply at the q above
-	MESSAGE_PTR msg_ptr = msgreceive(TASK_DELETOR_QUEUE);
+	MESSAGE_PTR pMsg = msgreceive(TASK_DELETOR_QUEUE);
 
 	// Destroy the Q
 	_msgq_close(deletor_qid);
 
-	bool taskDeleted = false;
-	if (strcmp((char *) msg_ptr->DATA, (char * ) TaskDeletedString) == 0) {
-		taskDeleted = true;
-	}
+	// Check return code status
+	bool taskDeleted = strsame(pMsg->DATA, TaskDeletedString);
 
 	// free the message
-	_msg_free(msg_ptr);
+	_msg_free(pMsg);
+
+	unlock(&accessmutex);
 
 	//Returns true or false if the task actually deleted from the DD scheduler
  	if (!taskDeleted) return ACCESS_ERROR;
 	return ACCESS_PASS;
 }
 
+// The monitor task is interested in the # of running tasks
 unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned int * size) {
 	// Open a message queue
 	_queue_id active_list_qid  = qopen(ACTIVE_LIST_QUEUE);
@@ -113,12 +143,12 @@ unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned 
 	_msg_free(mon_msg_ptr);
 
 	//Returns error or no error
-	return 1;
+	return ACCESS_PASS;
 }
 
 unsigned int dd_return_overdue_list(TASK_NODE ** overdue_tasks_head_ptr, unsigned int * size) {
 
-	return 1;
+	return ACCESS_FAIL;
 /*
 	// Open a message queue
 	_queue_id overdue_list_qid  = qopen(OVERDUE_LIST_QUEUE);

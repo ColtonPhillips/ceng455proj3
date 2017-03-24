@@ -10,61 +10,7 @@
 
 #include <mqx.h>
 #include <message.h>
-
-// Q IDS
-#define DD_QUEUE 9
-#define  TASK_CREATOR_QUEUE 10
-#define  TASK_DELETOR_QUEUE 11
-#define  ACTIVE_LIST_QUEUE 12
-#define  OVERDUE_LIST_QUEUE 13
-
-// handy function to get the current elapsed time in ms
-unsigned int currentTime() {
-	TIME_STRUCT ts;
-	_time_get_elapsed(&ts);
-	return ts.SECONDS * (1000) + ts.MILLISECONDS;
-}
-
-// these strings are sent as Data
-typedef unsigned char * UCHAR_PTR;
-const UCHAR_PTR TaskCreatedString = (UCHAR_PTR) "TASK CREATED\n";
-const UCHAR_PTR TaskCreatedFailedString = (UCHAR_PTR) "TASK CREATED FAILED\n";
-const UCHAR_PTR TaskDeletedString = (UCHAR_PTR) "TASK DELETED\n";
-const UCHAR_PTR TaskDeletedFailedString = (UCHAR_PTR) "TASK DELETED FAILED\n";
-const UCHAR_PTR ActiveListPassedString = (UCHAR_PTR) "ACTIVE LIST PASS\n";
-const UCHAR_PTR ActiveListFailedString = (UCHAR_PTR) "ACTIVE LIST FAILED\n";
-const UCHAR_PTR OverdueListPassedString = (UCHAR_PTR) "OVERDUE LIST PASS\n";
-const UCHAR_PTR OverdueListFailedString = (UCHAR_PTR) "OVERDUE LIST FAILED\n";
-
-// This struct is passed along through every message and is the basis of the DD task list
-typedef struct my_task_node {
-	unsigned int tid;				// Task ID
-	unsigned int deadline;			// Deadline (relative) - will change, and equals NO_TASK if the task is not a true task
-	unsigned int task_type;			// Always User Task
-	unsigned int creation_time;		// Creation time (elapsed from beginning of program) - will change
-} TASK_NODE, * TASK_NODE_PTR;
-
-// This struct is used for passing to the monitor for active and overdue tasks
-typedef struct monitor_node {
-	TASK_NODE_PTR task_list_head;
-	unsigned int task_list_size;
-} MONITOR_NODE, * MONITOR_NODE_PTR;
-
-// Every message containst a task node even if its not actually important or used such as returning status to the access functions
-#define DATA_BUFFER_SIZE 64
-typedef struct my_messsage
-{
-	MESSAGE_HEADER_STRUCT HEADER;
-	TASK_NODE TASK_DATA;
-	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as TaskCreatedString
-} MESSAGE, * MESSAGE_PTR;
-
-typedef struct my_monitor_messsage
-{
-	MESSAGE_HEADER_STRUCT HEADER;
-	MONITOR_NODE monitor_data;
-	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as ActiveTaskPassedString
-} MONITOR_MESSAGE, * MONITOR_MESSAGE_PTR;
+#include "Tasks.h"
 
 // message pool is for task messages
 // monitor message pools is for monitor messages

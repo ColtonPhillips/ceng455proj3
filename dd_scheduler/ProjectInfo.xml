@@ -424,10 +424,12 @@
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\print_prv.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx_stdlib\source\stdio\scan_prv.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\BTN.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\Constants.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Events.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\MessagePool.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\Priority.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\RGB.h</PathName>
+      <PathName>C:\project3-colton\dd_scheduler\Sources\Tasks.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\access_functions.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\helper_function.h</PathName>
       <PathName>C:\project3-colton\dd_scheduler\Sources\os_tasks.h</PathName>

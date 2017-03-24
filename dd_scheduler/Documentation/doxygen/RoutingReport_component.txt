@@ -211,7 +211,7 @@
 			</tr>
 			<tr>
 				<td>31</td><td>ADC0_SE17/PTE24/UART4_TX/I2C0_SCL/EWM_OUT_b</td><td>ACCEL_SCL/J2_18</td>
-				<td bgcolor='#F7DCFF'>PTE</td><td bgcolor='#F7DCFF'>port24</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td bgcolor='#F8FF9A'>ADC0</td><td bgcolor='#F8FF9A'>adc_se17</td><td bgcolor='#F8FF9A'>alt0</td><td bgcolor='#F8FF9A'>Input</td>
 			</tr>
 			<tr>
 				<td>32</td><td>ADC0_SE18/PTE25/UART4_RX/I2C0_SDA/EWM_IN</td><td>ACCEL_SDA/J2_20</td>
@@ -451,7 +451,7 @@
 			</tr>
 			<tr>
 				<td>85</td><td>PTC13/UART4_CTS_b/FB_AD26</td><td>ACCEL_INT2</td>
-				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port13</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td>86</td><td>PTC14/UART4_RX/FB_AD25</td><td>J199_3</td>
@@ -1946,7 +1946,7 @@
 			</tr>
 			<tr>
 				<td>31</td><td>ADC0_SE17/PTE24/UART4_TX/I2C0_SCL/EWM_OUT_b</td><td>ACCEL_SCL/J2_18</td>
-				<td bgcolor='#F7DCFF'>PTE</td><td bgcolor='#F7DCFF'>port24</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td bgcolor='#F8FF9A'>ADC0</td><td bgcolor='#F8FF9A'>adc_se17</td><td bgcolor='#F8FF9A'>alt0</td><td bgcolor='#F8FF9A'>Input</td>
 			</tr>
 			<tr>
 				<td>32</td><td>ADC0_SE18/PTE25/UART4_RX/I2C0_SDA/EWM_IN</td><td>ACCEL_SDA/J2_20</td>
@@ -2186,7 +2186,7 @@
 			</tr>
 			<tr>
 				<td>85</td><td>PTC13/UART4_CTS_b/FB_AD26</td><td>ACCEL_INT2</td>
-				<td bgcolor='#F7DCFF'>PTC</td><td bgcolor='#F7DCFF'>port13</td><td bgcolor='#F7DCFF'>alt1</td><td bgcolor='#F7DCFF'>Input</td>
+				<td></td><td></td><td></td><td></td>
 			</tr>
 			<tr>
 				<td>86</td><td>PTC14/UART4_RX/FB_AD25</td><td>J199_3</td>

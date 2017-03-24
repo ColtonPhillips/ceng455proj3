@@ -1,0 +1,134 @@
+/*
+ * Tasks.h
+ *
+ *  Created on: Mar 24, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_TASKS_H_
+#define SOURCES_TASKS_H_
+
+#include <stdio.h>
+#include <message.h>
+unsigned int currentTime();
+// This struct is passed along through every message and is the basis of the DD task list
+typedef struct my_task_node {
+	unsigned int tid;				// Task ID
+	unsigned int deadline;			// Deadline (relative) - will change, and equals NO_TASK if the task is not a true task
+	unsigned int task_type;			// Always User Task
+	unsigned int creation_time;		// Creation time (elapsed from beginning of program) - will change
+} TASK_NODE, * TASK_NODE_PTR;
+
+// This struct is used for passing to the monitor for active and overdue tasks
+typedef struct monitor_node {
+	TASK_NODE_PTR task_list_head;
+	unsigned int task_list_size;
+} MONITOR_NODE, * MONITOR_NODE_PTR;
+
+// Every message containst a task node even if its not actually important or used such as returning status to the access functions
+#define DATA_BUFFER_SIZE 64
+typedef struct my_messsage
+{
+	MESSAGE_HEADER_STRUCT HEADER;
+	TASK_NODE TASK_DATA;
+	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as TaskCreatedString
+} MESSAGE, * MESSAGE_PTR;
+
+typedef struct my_monitor_messsage
+{
+	MESSAGE_HEADER_STRUCT HEADER;
+	MONITOR_NODE monitor_data;
+	unsigned char DATA[DATA_BUFFER_SIZE]; 	// DD will set this to the strings above, such as ActiveTaskPassedString
+} MONITOR_MESSAGE, * MONITOR_MESSAGE_PTR;
+
+#define TASK_NODE_ARRAY_SIZE 16
+#define NO_TASK 0
+int numOfRunningTasks = 0;
+
+// Set the entire array of structs' deadlines to zero. (therefore they are not active tasks)
+void zeroTaskNodeArray(TASK_NODE_PTR task_node_array) {
+	int i;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		task_node_array[i].deadline = NO_TASK;
+	}
+}
+
+// Insert into the first spot with deadline == NO_TASK 		O(n)
+bool insertIntoTaskList(TASK_NODE_PTR task_list_array, TASK_NODE insertedTask, int * numOfRunningTasks) {
+	int i = 0;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_list_array[i].deadline == NO_TASK) {
+			task_list_array[i] = insertedTask;
+			(*numOfRunningTasks)++;
+			return true;
+		}
+	}
+	return false;
+}
+
+// Delete a running task (deadline != NO_TASK) if the tid matches 		O(n)
+bool deleteFromTaskList(TASK_NODE_PTR task_list_array, TASK_NODE Task, int * numOfRunningTasks) {
+	int i = 0;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_list_array[i].tid == Task.tid && task_list_array[i].deadline != NO_TASK) {
+			task_list_array[i].deadline = NO_TASK;
+			task_list_array[i].tid = NO_TASK;
+			(*numOfRunningTasks)--;
+			return true;
+		}
+	}
+	return false;
+}
+
+// Find the earliest Deadline within the whole array and set the pointer in argument 0		O(n)
+void refreshEarliestDeadlineTask(TASK_NODE_PTR * ppEDF, TASK_NODE_PTR task_list_array) {
+	unsigned int DL_min = 999999999; // sufficiently large enough number
+	*ppEDF = NULL; // return null if the task list is empty
+	int i = 0;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_list_array[i].deadline < DL_min && task_list_array[i].deadline != NO_TASK) {
+			DL_min = task_list_array[i].deadline;
+			*ppEDF = (TASK_NODE_PTR) &(task_list_array[i]);
+		}
+	}
+}
+
+
+
+// This is called during scheduling points on tasks to update creation time to now and deadline to be smaller than before.
+void updateNodeWithRespectToTime(TASK_NODE_PTR tn_ptr) {
+	// TODO: I feel like this is buggy if deadline becomes a negative or zero in some corner cases such as when two tasks are running
+	unsigned int ct = currentTime();
+	unsigned int delta = ct - tn_ptr->creation_time; // how much time has passed since last time it was updated
+	// Deadline is reduced by the amount of time elapsed since the time it was last 'created' (or updated)
+	tn_ptr->deadline = tn_ptr->deadline - delta;
+	// we just reuse creation time to make things simple for us.
+	tn_ptr->creation_time = ct;
+}
+
+TASK_NODE_PTR getActiveTaskHeadPtr(TASK_NODE_PTR task_node_array) {
+	TASK_NODE_PTR active_task_node_array = _mem_alloc(numOfRunningTasks * sizeof(TASK_NODE));
+	int current_active_task_node = 0;
+	int i;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_node_array->deadline != NO_TASK) {
+			active_task_node_array[current_active_task_node] = task_node_array[i];
+			current_active_task_node++;
+		}
+	}
+	return active_task_node_array;
+}
+
+void printActiveTasksPriorites(TASK_NODE_PTR task_node_array) {
+	int i;
+	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+		if (task_node_array[i].deadline != NO_TASK) {
+			_mqx_uint priority;
+			_task_get_priority(task_node_array[i].tid, &priority);
+			printf("T %d   D %d  Actual_P %d    ",(int)task_node_array[i].tid, (int)task_node_array[i].deadline,(int) priority);
+		}
+	}
+	printf("\n");
+}
+
+#endif /* SOURCES_TASKS_H_ */

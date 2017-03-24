@@ -7,7 +7,7 @@
 **     Version     : Component 1.2.0, Driver 1.4, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-10, 01:58, # CodeGen: 12
+**     Date/Time   : 2017-03-24, 03:21, # CodeGen: 35
 **     Abstract    :
 **
 **     Settings    :
@@ -1453,18 +1453,8 @@ void init_gpio_pins(uint32_t instance)
       PORT_HAL_SetMuxMode(PORTC,6UL,kPortMuxAsGpio);
       PORT_HAL_SetPullCmd(PORTC,6UL,true);
       PORT_HAL_SetPassiveFilterCmd(PORTC,6UL,true);
-      /* Affects PORTC_PCR13 register */
-      PORT_HAL_SetPullMode(PORTC,13UL,kPortPullDown);
-      PORT_HAL_SetMuxMode(PORTC,13UL,kPortMuxAsGpio);
-      PORT_HAL_SetPullCmd(PORTC,13UL,true);
-      PORT_HAL_SetPassiveFilterCmd(PORTC,13UL,true);
       break;
     case PORTE_IDX:                     /* PORTE_IDX */
-      /* Affects PORTE_PCR24 register */
-      PORT_HAL_SetPullMode(PORTE,24UL,kPortPullDown);
-      PORT_HAL_SetMuxMode(PORTE,24UL,kPortMuxAsGpio);
-      PORT_HAL_SetPullCmd(PORTE,24UL,true);
-      PORT_HAL_SetPassiveFilterCmd(PORTE,24UL,true);
       /* Affects PORTE_PCR26 register */
       PORT_HAL_SetDriveStrengthMode(PORTE,26UL,kPortLowDriveStrength);  
       PORT_HAL_SetMuxMode(PORTE,26UL,kPortMuxAsGpio);
@@ -1493,10 +1483,8 @@ void deinit_gpio_pins(uint32_t instance)
       break;
     case PORTC_IDX:                     /* PORTC_IDX */
       PORT_HAL_SetMuxMode(PORTC,6UL,kPortPinDisabled);
-      PORT_HAL_SetMuxMode(PORTC,13UL,kPortPinDisabled);
       break;
     case PORTE_IDX:                     /* PORTE_IDX */
-      PORT_HAL_SetMuxMode(PORTE,24UL,kPortPinDisabled);
       PORT_HAL_SetMuxMode(PORTE,26UL,kPortPinDisabled);
       break;
     default:

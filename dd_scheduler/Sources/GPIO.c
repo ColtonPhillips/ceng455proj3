@@ -6,6 +6,7 @@
  *      Author: coltonp
  */
 #include "GPIO.h"
+// Allows button and LED code to flourish
 void init_GPIO() {
 	GPIO_DRV_Init(gpio1_InpConfig0, gpio1_OutConfig0);
 }

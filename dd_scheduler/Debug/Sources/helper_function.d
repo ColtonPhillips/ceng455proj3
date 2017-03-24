@@ -1,17 +1,11 @@
 Sources/helper_function.o: ../Sources/helper_function.c \
  C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h \
- ../Sources/helper_function.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h \
- C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h \
- C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h \
+ ../Sources/helper_function.h ../Sources/Constants.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h \
  C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/mcu/mqx_sdk_config.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/small_ram_config.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/verif_enabled_config.h \
- C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psptypes.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_comp.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx_cpudef.h \
@@ -39,6 +33,13 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/kinetis_mpu.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/cortex.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mutex.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h \
+ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h \
+ C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h \
+ C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_time.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_math.h \
@@ -48,8 +49,7 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h \
- ../Sources/access_functions.h ../Sources/MessagePool.h ../Sources/GPIO.h \
- C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
+ ../Sources/GPIO.h C:/project3-colton/dd_scheduler/Generated_Code/gpio1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/clockMan1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/osa1.h \
  C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h \
@@ -73,26 +73,19 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/platform/system/inc/fsl_clock_manager.h \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_gpio_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h \
- ../Sources/RGB.h ../Sources/Priority.h \
+ ../Sources/RGB.h ../Sources/BTN.h ../Sources/Tasks.h \
+ ../Sources/access_functions.h ../Sources/MessagePool.h \
+ ../Sources/Priority.h \
  C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h \
- C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h \
- ../Sources/BTN.h
+ C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
 ../Sources/helper_function.h:
 
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
+../Sources/Constants.h:
 
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h:
-
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h:
-
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h:
-
-C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h:
-
-C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h:
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/mqx_cnfg.h:
 
@@ -101,8 +94,6 @@ C:/project3-colton/dd_scheduler/Generated_Code/SDK/rtos/mqx/config/mcu/mqx_sdk_c
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/small_ram_config.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/config/common/verif_enabled_config.h:
-
-C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mqx.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psptypes.h:
 
@@ -158,6 +149,20 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/cortex.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/lwmem.h:
 
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/mutex.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/stdio.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx_stdlib/source/include/std_prv.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/fcntl.h:
+
+C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/nio/nio.h:
+
+C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction.h:
+
+C:/project3-colton/dd_scheduler/SDK/platform/osa/inc/fsl_os_abstraction_mqx.h:
+
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/psp/cortex_m/psp_time.h:
@@ -175,10 +180,6 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/task.h:
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h:
 
 C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h:
-
-../Sources/access_functions.h:
-
-../Sources/MessagePool.h:
 
 ../Sources/GPIO.h:
 
@@ -232,10 +233,16 @@ C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h:
 
 ../Sources/RGB.h:
 
+../Sources/BTN.h:
+
+../Sources/Tasks.h:
+
+../Sources/access_functions.h:
+
+../Sources/MessagePool.h:
+
 ../Sources/Priority.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h:
-
-../Sources/BTN.h:

@@ -62,6 +62,7 @@ void init_main_task() {
 	init_RGB_light(); // blue light indicates the light system is on.
 	out_kill_lights(); // but we turn it off.
 	init_message_pools(); // Initializes the TASK_LIST message pool and DD q
+	init_mutex();
 }
 
 /*

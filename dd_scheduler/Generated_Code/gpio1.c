@@ -7,7 +7,7 @@
 **     Version     : Component 1.3.0, Driver 01.00, CPU db: 3.00.000
 **     Repository  : KSDK 1.3.0
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2017-03-10, 01:58, # CodeGen: 12
+**     Date/Time   : 2017-03-24, 04:52, # CodeGen: 38
 **
 **     Copyright : 1997 - 2015 Freescale Semiconductor, Inc. 
 **     All Rights Reserved.
@@ -65,22 +65,6 @@ const gpio_input_pin_user_config_t gpio1_InpConfig0[] = {
   },
   {
     .pinName = BTN_Left,
-    .config.isPullEnable = true, 
-    .config.pullSelect = kPortPullDown,
-    .config.isPassiveFilterEnabled = true,
-    .config.isDigitalFilterEnabled = true,
-    .config.interrupt = kPortIntDisabled
-  },
-  {
-    .pinName = ACCEL_2,
-    .config.isPullEnable = true, 
-    .config.pullSelect = kPortPullDown,
-    .config.isPassiveFilterEnabled = true,
-    .config.isDigitalFilterEnabled = true,
-    .config.interrupt = kPortIntDisabled
-  },
-  {
-    .pinName = ACCEL_3,
     .config.isPullEnable = true, 
     .config.pullSelect = kPortPullDown,
     .config.isPassiveFilterEnabled = true,

@@ -1,0 +1,18 @@
+/*
+ * Constants.h
+ *
+ *  Created on: Mar 24, 2017
+ *      Author: coltonp
+ */
+
+#ifndef SOURCES_CONSTANTS_H_
+#define SOURCES_CONSTANTS_H_
+
+// Unique Q IDS
+#define DD_QUEUE 9
+#define  TASK_CREATOR_QUEUE 10
+#define  TASK_DELETOR_QUEUE 11
+#define  ACTIVE_LIST_QUEUE 12
+#define  OVERDUE_LIST_QUEUE 13
+
+#endif /* SOURCES_CONSTANTS_H_ */

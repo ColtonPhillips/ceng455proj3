@@ -5586,3 +5586,21 @@ Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.somniumtech.
 
 !ENTRY com.processorexpert.core.ide.wizard.ui 2 0 2017-03-23 19:26:12.266
 !MESSAGE External elements location C:\Freescale\KDS_v3\eclipse\ProcessorExpert\BoardConfigurations/wizard_data does not exist
+!SESSION 2017-03-24 02:58:43.366 -----------------------------------------------
+eclipse.buildId=3.2.0.201603041649
+java.version=1.7.0_76
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -product com.somniumtech.branding.kds.ide -showlocation
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.somniumtech.branding.kds.ide -showlocation
+
+!ENTRY com.processorexpert.core.ide.wizard.ui 2 0 2017-03-24 02:58:51.184
+!MESSAGE External elements location C:\Freescale\KDS_v3\eclipse\ProcessorExpert\BoardConfigurations/wizard_data does not exist
+
+!ENTRY org.eclipse.cdt.ui 4 0 2017-03-24 03:45:55.943
+!MESSAGE Cannot work without declarator
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2017-03-24 05:09:35.309
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.mi.service.MIRunControl$9@698706): Status ERROR: org.eclipse.cdt.dsf.gdb code=10001 Context cannot be suspended. null' resulted in an error.
+!SUBENTRY 1 org.eclipse.cdt.dsf.gdb 4 10001 2017-03-24 05:09:35.309
+!MESSAGE Context cannot be suspended.
