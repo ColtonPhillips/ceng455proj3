@@ -36,5 +36,7 @@ void unlock(MUTEX_STRUCT_PTR Paccessmutex);
 void timer_callback(_timer_id t, void* dataptr, unsigned int seconds, unsigned int miliseconds);
 void synthetic_compute_ms(unsigned int ms);
 unsigned int currentTime();
-_timer_id startUtilizationTimer(TIMER_NOTIFICATION_TIME_FPTR timerfunction, _timer_id * timer );
+void timercreate();
+_timer_id startUtilizationTimer(TIMER_NOTIFICATION_TIME_FPTR timerfunction);
+#define UTILIZATION_TIMER_LENGTH 4
 #endif /* SOURCES_HELPER_FUNCTION_H_ */

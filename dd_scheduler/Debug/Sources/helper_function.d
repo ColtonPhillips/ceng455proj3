@@ -74,10 +74,10 @@ Sources/helper_function.o: ../Sources/helper_function.c \
  C:/project3-colton/dd_scheduler/SDK/platform/hal/inc/fsl_gpio_hal.h \
  C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h \
  ../Sources/RGB.h ../Sources/BTN.h ../Sources/Tasks.h \
- ../Sources/access_functions.h ../Sources/MessagePool.h \
  ../Sources/Priority.h \
  C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h \
- C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h
+ C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h \
+ ../Sources/access_functions.h ../Sources/MessagePool.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
@@ -237,12 +237,12 @@ C:/project3-colton/dd_scheduler/SDK/platform/drivers/inc/fsl_gpio_driver.h:
 
 ../Sources/Tasks.h:
 
-../Sources/access_functions.h:
-
-../Sources/MessagePool.h:
-
 ../Sources/Priority.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/Cpu.h:
 
 C:/project3-colton/dd_scheduler/Generated_Code/mqx_ksdk.h:
+
+../Sources/access_functions.h:
+
+../Sources/MessagePool.h:

@@ -126,8 +126,17 @@ unsigned int currentTime() {
 	_time_get_elapsed(&ts);
 	return (unsigned int)( ts.SECONDS * (1000) + ts.MILLISECONDS);
 }
-#define UTILIZATION_TIMER_LENGTH 100
-_timer_id startUtilizationTimer(TIMER_NOTIFICATION_TIME_FPTR timerfunction, _timer_id * timer ) {
-	* timer = _timer_start_periodic_every(timerfunction,&timer,TIMER_ELAPSED_TIME_MODE,UTILIZATION_TIMER_LENGTH);
-	return * timer;
+
+void timercreate() {
+	if (_timer_create_component(TIMER_DEFAULT_TASK_PRIORITY,
+	 TIMER_DEFAULT_STACK_SIZE*2)
+	 != MQX_OK){
+			printf("%d\n",(int)_task_get_error());
+			_mqx_exit(1);
+	 }
+}
+
+_timer_id startUtilizationTimer(TIMER_NOTIFICATION_TIME_FPTR timerfunction) {
+	_timer_id timeid = _timer_start_periodic_every(timerfunction,0,TIMER_ELAPSED_TIME_MODE,UTILIZATION_TIMER_LENGTH);
+	return timeid;
 }

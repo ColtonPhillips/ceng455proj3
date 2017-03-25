@@ -41,7 +41,9 @@ _task_id dd_tcreate(
 
 #ifndef __NOPRINT
 
-	printTD("TASK CREATED",this_task_id);
+	printTD("\nTASK CREATED",this_task_id);
+	printf("E: %u\n",elapsed_execution);
+	printf("D: %u\n\n",elapsed_deadline);
 
 #endif
 
@@ -114,7 +116,9 @@ bool dd_delete(unsigned int task_id) {
 }
 
 // The monitor task is interested in the # of running tasks
-unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned int * size) {
+unsigned int dd_return_active_list(TASK_NODE ** pActive_tasks_head, unsigned int * size) {
+	lock(&accessmutex);
+
 	// Open a message queue
 	_queue_id active_list_qid  = qopen(ACTIVE_LIST_QUEUE);
 
@@ -130,17 +134,19 @@ unsigned int dd_return_active_list(TASK_NODE ** active_tasks_head_ptr, unsigned 
 				(unsigned char *)"ACTIVELIST?\n"); // The Data
 
 	// Wait for reply at the q above
-	MONITOR_MESSAGE_PTR mon_msg_ptr = monitormsgreceive(ACTIVE_LIST_QUEUE);
+	MONITOR_MESSAGE_PTR pMonMsg = monitormsgreceive(ACTIVE_LIST_QUEUE);
 
 	// Destroy the Q
 	_msgq_close(active_list_qid);
 
 	// use the message to get the active list and set to the paramater above
-	* active_tasks_head_ptr = mon_msg_ptr->monitor_data.task_list_head;
-	* size = mon_msg_ptr->monitor_data.task_list_size;
+	* pActive_tasks_head = pMonMsg->monitor_data.task_list_head;
+	* size = pMonMsg->monitor_data.task_list_size;
 
 	// free the message
-	_msg_free(mon_msg_ptr);
+	_msg_free(pMonMsg);
+
+	unlock(&accessmutex);
 
 	//Returns error or no error
 	return ACCESS_PASS;

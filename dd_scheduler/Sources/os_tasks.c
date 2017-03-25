@@ -52,35 +52,23 @@ extern "C" {
 ** ===================================================================
 */
 
-
-unsigned int schedule_exec_time = 0;
-void timer_incr_scheduler
-	(
-		_timer_id timer_id,
-		void	*pData,
-		uint32_t seconds,
-		uint32_t milliseconds
-	)
-{
-	printf("!");
-	schedule_exec_time += 1;
-}
-
-#define TIMER_TASK_PRIORITY 2
-#define TIMER_STACK_SIZE 4000
+//#define TIMER_TASK_PRIORITY 2
+//#define TIMER_STACK_SIZE 4000
 
 #define LOW_USER_TASK_PRIORITY 25
 #define SCHEDULER_PRIORITY 15
 #define SCHEDULED_USER_TASK_PRIORITY 18
+
+#define SILENCE_SCHEDULE
+
 int numOfRunningTasks = 0;
+TASK_NODE task_node_array[TASK_NODE_ARRAY_SIZE];
 void dd_scheduler_task(os_task_param_t task_init_data)
 {
    // Open a Q for the DDscheduler to use, then lower it's priority (from 11) to 15
-	_timer_id timer;
-	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_scheduler,&timer);
 	_queue_id dd_qid = qopen(DD_QUEUE);
 	priorityset(SCHEDULER_PRIORITY); // PRIORITY IS NOW BELOW THE GENERATOR
-	_timer_create_component(TIMER_TASK_PRIORITY, TIMER_STACK_SIZE);
+
 
 	// BLOCKS UNTIL GENERATOR BLOCKS WHEN IT SENDS A MESSAGE
 
@@ -88,19 +76,20 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 	unsigned int deadlineTimeout = 0;
 
 	// Allocate the Task Node Array buffer of a fixed size and set it all to zero (deadline) aka no active task in list
-	TASK_NODE_PTR task_node_array = zeroDeadlineTaskNodeArrayFactory();
+	zeroDeadlineTaskNodeArrayFactory(task_node_array);
 
 	// The currently executing task is stored here as a pointer and is NULL if there is no EDF (aka set deadlineTimeout to 0)
 	TASK_NODE_PTR earliestDeadlineTask = NULL;
 
 	while (1) {
 		// Wait for deadlineTimeout ms for a message (forever if =0)
+#ifndef SILENCE_SCHEDULE
 		if (earliestDeadlineTask != NULL) {
 			printf("RUNNING TASKS:%d\n", numOfRunningTasks);
 			printf("DEADLINE:%d\n",(int) deadlineTimeout);
 		} else {
 		}
-
+#endif
 		MESSAGE_PTR pMsg = msgreceivetimeout(DD_QUEUE, deadlineTimeout);
 
 		// v Handle the message v
@@ -113,6 +102,9 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 
 		// > Handle the deadline timeout case
 		if (pMsg == NULL) {
+
+			printf("TIMEOUT\n");
+
 			// Turn the task off. abort the task. lower active task count
 			earliestDeadlineTask->deadline = NO_TASK;
 			numOfRunningTasks--;
@@ -218,6 +210,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			unsigned int activeTaskListSize = numOfRunningTasks;
 			TASK_NODE_PTR activeTaskListHead = getActiveTaskHeadPtr(task_node_array, numOfRunningTasks);
 
+
 			// the EDF is surely the monitor task: update the deadlineTimeout
 			deadlineTimeout = earliestDeadlineTask->deadline;
 
@@ -226,7 +219,7 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			if (1) {returnData = ActiveListPassedString;} else {returnData = ActiveListFailedString;}
 			monitormsgpush(
 				DD_QUEUE, 			// src
-				TASK_DELETOR_QUEUE, // target
+				ACTIVE_LIST_QUEUE, // target
 				activeTaskListHead, // Task list
 				activeTaskListSize, // num of tasks running
 				returnData); 		// data
@@ -237,8 +230,9 @@ void dd_scheduler_task(os_task_param_t task_init_data)
 			//
 		}
 
-
-		printActiveTasksPriorites(task_node_array);
+#ifndef SILENCE_SCHEDULE
+		printActiveTasksPriorites(task_node_array, TASK_NODE_ARRAY_SIZE);
+#endif
 	}
 	_msgq_close(dd_qid);
 	abortme();
@@ -260,30 +254,72 @@ typedef struct my_periodic_task {
 	unsigned int period;
 } PERIODIC_TASK, * PERIODIC_TASK_PTR;
 
+typedef struct my_aperiodic_task {
+	unsigned int template_index;
+	unsigned int phase;
+	unsigned int execution;
+	unsigned int deadline;
+	unsigned int period;
+} APERIODIC_TASK, * APERIODIC_TASK_PTR;
+
+
+// The Periodic One Shot Timer Callback function
 static void PeriodicallyAddTask(
 		_timer_id timer_id,
 		void	*pData,
 		uint32_t seconds,
 		uint32_t milliseconds
 ) {
-
 	PERIODIC_TASK_PTR pPeriodicTask = (PERIODIC_TASK_PTR) pData;
 	dd_tcreate(pPeriodicTask->template_index,
 			pPeriodicTask->execution,
 			pPeriodicTask->deadline);
 }
 
+// The Aperiodic One Shot Timer Callback function
+static void AperiodicallyAddTask(
+		_timer_id timer_id,
+		void	*pData,
+		uint32_t seconds,
+		uint32_t milliseconds
+) {
+
+	APERIODIC_TASK_PTR pAperiodicTask = (APERIODIC_TASK_PTR) pData;
+	dd_tcreate(pAperiodicTask->template_index,
+			pAperiodicTask->execution,
+			pAperiodicTask->deadline);
+}
+
+// Start periodic timers each periodic task's period
 void PeriodTaskInit(PERIODIC_TASK_PTR pPeriodicTasks, unsigned int length) {
 	int i;
 	for (i = 0; i < length; i++) {
-		_timer_start_periodic_every((TIMER_NOTIFICATION_TIME_FPTR)PeriodicallyAddTask,&pPeriodicTasks[i],TIMER_KERNEL_TIME_MODE, pPeriodicTasks[i].period);
+		_timer_start_periodic_every((TIMER_NOTIFICATION_TIME_FPTR)PeriodicallyAddTask,&(pPeriodicTasks[i]),TIMER_KERNEL_TIME_MODE, pPeriodicTasks[i].period);
 	}
 }
 
+// Start one shot timers for a group of aperiodic tasks' phase times
+void AperiodTaskInit(APERIODIC_TASK_PTR pAperiodicTasks, unsigned int length) {
+	int i;
+	for (i = 0; i < length; i++) {
+		_timer_start_oneshot_after((TIMER_NOTIFICATION_TIME_FPTR)AperiodicallyAddTask,&(pAperiodicTasks[i]),TIMER_KERNEL_TIME_MODE,pAperiodicTasks[i].phase);
+	}
+}
+
+// Print the periodic tasks' deadlines.
 void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks, unsigned int length) {
 	int i;
 	for (i = 0; i < length; i++) {
-		printf(" DL%d = %d  ", i, pPeriodicTasks[i].deadline);
+		printf(" P-DL%d = %d  ", i, pPeriodicTasks[i].deadline);
+	}
+	printf("\n");
+}
+
+// Print the aperiodic tasks' deadlines.
+void printAperiodTasks (APERIODIC_TASK_PTR pAperiodicTasks, unsigned int length) {
+	int i;
+	for (i = 0; i < length; i++) {
+		printf("PHZ: A-DL%d = %d  ", i, pAperiodicTasks[i].deadline);
 	}
 	printf("\n");
 }
@@ -291,11 +327,86 @@ void printPeriodTasks (PERIODIC_TASK_PTR pPeriodicTasks, unsigned int length) {
 //TESTS
 //#define SIMPLE_TEST
 //#define PERIODIC_TEST
-#define MONITORING_TEST
+//#define MONITORING_TEST
+
+//#define TEST1
+//#define TEST2
+//#define TEST3
+
+//#define TEST5
+#define TEST6
 
 // The task generator creates and tests tasks for the DD scheduler
 void generator_task(os_task_param_t task_init_data)
 {
+
+#ifdef TEST1
+#define __mynum 5
+	PERIODIC_TASK monitortest_periods[__mynum] =
+	{{DD_USER_TASK,1000,5000, 5000},
+	//{DD_USER_TASK,1000,5000, 5000},
+	//{DD_USER_TASK,1000,5000, 5000},
+	//{DD_USER_TASK,1000,5000, 5000},
+	{DD_MONITOR_TASK,1, 10000, 10000}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
+#endif
+
+#ifdef TEST2
+#define __mynum 3
+	PERIODIC_TASK monitortest_periods[__mynum] =
+	{{DD_USER_TASK,1000,1500, 1501},
+	{DD_USER_TASK,1500,3500, 3501},
+	{DD_MONITOR_TASK,1, 3500, 3501}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
+#endif
+
+#ifdef TEST3
+#define __mynum 2
+	PERIODIC_TASK monitortest_periods[__mynum] =
+	{{DD_USER_TASK,1500,2000, 2001},
+	{DD_MONITOR_TASK,1, 4000, 4000}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
+#define __mynum2 1
+	APERIODIC_TASK monitortest_aperiods[__mynum2] =
+		{{DD_USER_TASK,2000,1500,2000,2000}};
+		printAperiodTasks(monitortest_aperiods, __mynum2);
+		AperiodTaskInit(monitortest_aperiods, __mynum2);
+#endif
+
+#ifdef TEST5
+#define __mynum 3
+	PERIODIC_TASK monitortest_periods[__mynum] =
+	{{DD_USER_TASK,1500,2000, 2001},
+	{DD_USER_TASK,1000,2000, 2001},
+	{DD_MONITOR_TASK,1, 2000, 2001}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
+#define __mynum2 1
+	APERIODIC_TASK monitortest_aperiods[__mynum2] =
+		{{DD_USER_TASK,1000,1000,2000,2001}};
+		printAperiodTasks(monitortest_aperiods, __mynum2);
+		AperiodTaskInit(monitortest_aperiods, __mynum2);
+#endif
+
+#ifdef TEST6
+#define __mynum 4
+	PERIODIC_TASK monitortest_periods[__mynum] =
+	{{DD_USER_TASK,100,300, 300},
+	{DD_USER_TASK,200,1000, 1000},
+	{DD_USER_TASK,250,2000, 2000},
+	{DD_MONITOR_TASK,1, 10000, 10000}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
+#define __mynum2 1
+	APERIODIC_TASK monitortest_aperiods[__mynum2] =
+		{{DD_USER_TASK,2500,1000,1500,1500}};
+		printAperiodTasks(monitortest_aperiods, __mynum2);
+		AperiodTaskInit(monitortest_aperiods, __mynum2);
+#endif
+
 #ifdef SIMPLE_TEST
 	// These aperiodic tasks should definitely be created and definitely be overdue
 	asrt(dd_tcreate(DD_USER_TASK, 100, 1500));
@@ -306,10 +417,12 @@ void generator_task(os_task_param_t task_init_data)
 
 #ifdef MONITORING_TEST
 	// Create Timer(s) for periodic tasks
-	PERIODIC_TASK periods[2] = 	{{DD_USER_TASK,100,400, 5000},
-								{DD_MONITOR_TASK, 1000, 1500, 3000}};
-	printPeriodTasks(periods, 2);
-	PeriodTaskInit(periods, 2);
+#define __mynum 3
+	PERIODIC_TASK monitortest_periods[__mynum] = {{DD_USER_TASK,500,3000, 3000},
+											{DD_USER_TASK,		400,3000, 3000},
+											{DD_MONITOR_TASK, 	10, 6000, 6000}};
+	printPeriodTasks(monitortest_periods, __mynum);
+	PeriodTaskInit(monitortest_periods, __mynum);
 #endif
 
 
@@ -328,8 +441,6 @@ void generator_task(os_task_param_t task_init_data)
 	}
 }
 
-
-
 /*
 ** ===================================================================
 **     Callback    : idle_task
@@ -340,25 +451,11 @@ void generator_task(os_task_param_t task_init_data)
 ** ===================================================================
 */
 unsigned int idle_exec_time = 0;
-void timer_incr_idle
-	(
-		_timer_id timer_id,
-		void	*pData,
-		uint32_t seconds,
-		uint32_t milliseconds
-	)
-{
-	printf("*");
-	idle_exec_time += 1;
-}
-
 void idle_task(os_task_param_t task_init_data)
 {
-	_timer_id timer;
-	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_idle,&timer);
-
 	// Spin forever
 	while(1) {
+		idle_exec_time++;
 	}
 	abortme();
 
@@ -374,29 +471,26 @@ void idle_task(os_task_param_t task_init_data)
 ** ===================================================================
 */
 
+// CREATE BUSY-WAIT DELAY FOR A GIVEN DURATION
 unsigned int user_exec_time = 0;
-void timer_incr_user
-	(
-		_timer_id timer_id,
-		void	*pData,
-		uint32_t seconds,
-		uint32_t milliseconds
-	)
-{
-	printf("_");
-	user_exec_time += 1;
+void user_synthetic_compute_ms(unsigned int ms){
+	bool flag = true;
+	MQX_TICK_STRUCT Ticks;
+	_time_init_ticks(&Ticks, 0);
+	_time_add_msec_to_ticks(&Ticks, ms);
+	_timer_start_oneshot_after_ticks((TIMER_NOTIFICATION_TICK_FPTR)timer_callback, (void *) &flag, TIMER_ELAPSED_TIME_MODE, &Ticks);
+	// TIMER ELAPSED MODE ENSURES THE TIMER ONLY OCCURS WHEN THE USER TASK IS ACTUALLY RUNNING
+	while (flag){
+		user_exec_time++;
+	}
 }
 
 void user_task(os_task_param_t task_init_data)
 {
-	_timer_id timer;
-	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_user,&timer);
-
 	unsigned int executionTime = (unsigned int) task_init_data;
-	synthetic_compute_ms(executionTime);
+	user_synthetic_compute_ms(executionTime);
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("DELETE FAILED");}
-	_timer_cancel(timer);
 	abortme();
 }
 
@@ -409,69 +503,61 @@ void user_task(os_task_param_t task_init_data)
 **     Returns : Nothing
 ** ===================================================================
 */
-
-unsigned int monitor_exec_time = 0;
-void timer_incr_monitor
-	(
-		_timer_id timer_id,
-		void	*pData,
-		uint32_t seconds,
-		uint32_t milliseconds
-	)
-{
-	printf("~");
-	monitor_exec_time += 1;
-}
-
+#define FIXEDPOINTSCALE 100000
+unsigned int lastMonitoringTime = 1;
 void monitor_task(os_task_param_t task_init_data)
 {
-	_timer_id timer;
-	startUtilizationTimer((TIMER_NOTIFICATION_TIME_FPTR)timer_incr_monitor,&timer);
-
-	synthetic_compute_ms(task_init_data);
-
 	// Get Overdue and Active Tasks
 	TASK_NODE_PTR active_tasks_head_ptr  = NULL;
 	TASK_NODE_PTR overdue_tasks_head_ptr = NULL;
 	unsigned int active_size = 0;
 	unsigned int overdue_size = 0;
-	//dd_return_active_list(&active_tasks_head_ptr, &active_size);
+	dd_return_active_list(&active_tasks_head_ptr, &active_size);
 	//dd_return_overdue_list(&overdue_tasks_head_ptr, &overdue_size);
+
+	printActiveTasksPriorites(active_tasks_head_ptr, active_size);
 
 	// Set Red Light if any tasks overdue
 	out_kill_lights();
 	if (overdue_tasks_head_ptr == NULL) {
-		red_light();
+		white_light();
 	}
 
 	if (active_tasks_head_ptr == NULL) {
 		blue_light();
 	}
+	else {
+		red_light();
+	}
 
 	if (in_left_button()) {
-		red_light();
+		green_light();
 	}
 
 	if (in_right_button()) {
 		dd_tcreate(DD_USER_TASK,10000,23456);
 	}
-	float utilization = 1.0 -
-	  ((float) idle_exec_time / (float) (1 + schedule_exec_time + monitor_exec_time + user_exec_time));
-	printf("Utilization: %f\n", utilization);
+	user_exec_time /= 10000;
+	idle_exec_time /= 10000;
+	printf("\nUtilization: %u\n", (user_exec_time * (1000) )/(user_exec_time + idle_exec_time));
+	printf("Idle: %u\n", (idle_exec_time * (1000) )/(user_exec_time + idle_exec_time));
+	//printf("Overhead: %d\n", ((10000000 - user_exec_time - idle_exec_time) * 100));
+
+	// Reset those values
+	user_exec_time = 0; idle_exec_time = 0;
 
 	// Free the memory my dude.
-	/*int i;
+	int i;
 	for (i = 0; i < active_size; i++) {
 		_mem_free(&(active_tasks_head_ptr[i]));
 	}
 	for (i = 0; i < overdue_size; i++) {
 		_mem_free(&(overdue_tasks_head_ptr[i]));
 	}
-*/
+
 	// Delete this task from DD and schedule another one! :)
 	bool b = dd_delete(_task_get_id());
 	if (!b) {println("MONITOR DELETE FAILED");}
-	_timer_cancel(timer);
 	abortme();
 }
 

@@ -63,6 +63,7 @@ void init_main_task() {
 	out_kill_lights(); // but we turn it off.
 	init_message_pools(); // Initializes the TASK_LIST message pool and DD q
 	init_mutex();
+	timercreate();
 }
 
 /*

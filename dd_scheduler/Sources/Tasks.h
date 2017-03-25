@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <message.h>
+#include "Priority.h"
 unsigned int currentTime();
 // This struct is passed along through every message and is the basis of the DD task list
 typedef struct my_task_node {
@@ -45,13 +46,11 @@ typedef struct my_monitor_messsage
 #define NO_TASK 0
 
 // Set the entire array of structs' deadlines to zero. (therefore they are not active tasks)
-TASK_NODE_PTR zeroDeadlineTaskNodeArrayFactory() {
-	TASK_NODE_PTR task_node_array = _mem_alloc(TASK_NODE_ARRAY_SIZE * sizeof(TASK_NODE));
+void zeroDeadlineTaskNodeArrayFactory(TASK_NODE_PTR task_node_array) {
 	int i;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
 		task_node_array[i].deadline = NO_TASK;
 	}
-	return task_node_array;
 }
 
 // Insert into the first spot with deadline == NO_TASK 		O(n)
@@ -123,7 +122,7 @@ TASK_NODE_PTR getActiveTaskHeadPtr(TASK_NODE_PTR task_node_array, int numOfRunni
 	int current_active_task_node = 0;
 	int i;
 	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
-		if (task_node_array->deadline != NO_TASK) {
+		if (task_node_array[i].deadline != NO_TASK) {
 			active_task_node_array[current_active_task_node] = task_node_array[i];
 			current_active_task_node++;
 		}
@@ -132,16 +131,16 @@ TASK_NODE_PTR getActiveTaskHeadPtr(TASK_NODE_PTR task_node_array, int numOfRunni
 }
 
 // Print out the active tasks and their priorities in the array
-void printActiveTasksPriorites(TASK_NODE_PTR task_node_array) {
+void printActiveTasksPriorites(TASK_NODE_PTR task_node_array, unsigned int N) {
 	int i;
-	for (i = 0; i < TASK_NODE_ARRAY_SIZE; i++) {
+	for (i = 0; i < N; i++) {
 		if (task_node_array[i].deadline != NO_TASK) {
 			_mqx_uint priority;
 			_task_get_priority(task_node_array[i].tid, &priority);
-			printf("< Task: %d; Deadline: %d;  Actual Priortiy %d; >\n",
+			printf("<T:%d; DL:%d; PL%d ;>\n",
 					(int)task_node_array[i].tid,
 					(int)task_node_array[i].deadline,
-					(int) priority);
+					(int) prioritygettask(task_node_array[i].tid));
 		}
 	}
 	printf("\n");

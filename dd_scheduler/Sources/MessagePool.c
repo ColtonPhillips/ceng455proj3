@@ -20,36 +20,36 @@ _queue_id qopen(_queue_number QNUMBER) {
 
 // Allocate a task type message
 MESSAGE_PTR msgalloc() {
-	MESSAGE_PTR msg_ptr = (MESSAGE_PTR)_msg_alloc(message_pool);
-	if (msg_ptr == NULL) {
+	MESSAGE_PTR pMsg = (MESSAGE_PTR)_msg_alloc(message_pool);
+	if (pMsg == NULL) {
 		 printf("\nCould not allocate a message\n");
 		 _task_block();
 	}
-	return msg_ptr;
+	return pMsg;
 }
 
 // Allocate a monitor type message
 MONITOR_MESSAGE_PTR monitormsgalloc() {
-	MONITOR_MESSAGE_PTR mon_msg_ptr = (MONITOR_MESSAGE_PTR)_msg_alloc(monitor_message_pool);
-	if (mon_msg_ptr == NULL) {
+	MONITOR_MESSAGE_PTR pMonMsg = (MONITOR_MESSAGE_PTR)_msg_alloc(monitor_message_pool);
+	if (pMonMsg == NULL) {
 		 printf("\nCould not allocate a message\n");
 		 _task_block();
 	}
-	return mon_msg_ptr;
+	return pMonMsg;
 }
 
 // The main task initializes a group of message pools (2)
-#define NUM_OF_MESSAGES 80
+#define NUM_OF_MESSAGES 40
 void init_message_pools() {
 	   message_pool = _msgpool_create(sizeof(MESSAGE),
-			   NUM_OF_MESSAGES, 0, 0);
+			   NUM_OF_MESSAGES, 1, 0);
 	   if (message_pool == MSGPOOL_NULL_POOL_ID) {
 		  printf("\nCould not create a message pool\n");
 		  _task_block();
 	   }
 
 	   monitor_message_pool = _msgpool_create(sizeof(MONITOR_MESSAGE),
-		   NUM_OF_MESSAGES, 0, 0);
+		   NUM_OF_MESSAGES, 1, 0);
 	   if (monitor_message_pool == MSGPOOL_NULL_POOL_ID) {
 		  printf("\nCould not create a monitor message pool\n");
 		  _task_block();
@@ -72,8 +72,8 @@ TASK_NODE taskNodeFactory(
 }
 
 // Send a task type message which has a given target
-void msgsend(MESSAGE_PTR msg_ptr) {
-	if (!_msgq_send(msg_ptr)) {
+void msgsend(MESSAGE_PTR pMsg) {
+	if (!_msgq_send(pMsg)) {
 		printf("\nCould not send a message\n");
 		printf("%d\n",(int)_task_get_error());
 		_task_block();
@@ -81,8 +81,8 @@ void msgsend(MESSAGE_PTR msg_ptr) {
 }
 
 // Send a monitor type message which has a given target
-void monitormsgsend(MONITOR_MESSAGE_PTR mon_msg_ptr) {
-	if (!_msgq_send(mon_msg_ptr)) {
+void monitormsgsend(MONITOR_MESSAGE_PTR pMonMsg) {
+	if (!_msgq_send(pMonMsg)) {
 		printf("\nCould not send a monitor message\n");
 		printf("%d\n",(int)_task_get_error());
 		_task_block();
@@ -198,6 +198,7 @@ MESSAGE_PTR msgreceivetimeout(_queue_number QNUMBER, unsigned int timeout){
 	if (msg_ptr == NULL) {
 		// TODO: Check if the NULL is an error or a timeout. We're assuming its a timeout. :/
 		println("MSGTIMEOUT");
+		printf(" %d\n", _task_get_error());
 	}
 	return msg_ptr;
 }

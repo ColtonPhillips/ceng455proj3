@@ -24,7 +24,8 @@ void out_kill_lights() {
 void out_red_light(){GPIO_DRV_ClearPinOutput(LED_Red);}
 void out_green_light(){GPIO_DRV_ClearPinOutput(LED_Green);}
 void out_blue_light(){GPIO_DRV_ClearPinOutput(LED_Blue);}
-void out_white_light(){out_red_light();out_green_light();out_blue_light();}
+
+void white_light(){out_red_light();out_green_light();out_blue_light();}
 
 void red_light() {
 	out_kill_lights();

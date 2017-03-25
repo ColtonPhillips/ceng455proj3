@@ -92,8 +92,8 @@ Sources/os_tasks.o: ../Sources/os_tasks.c \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/message.h \
  C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h \
  ../Sources/GPIO.h ../Sources/RGB.h ../Sources/BTN.h ../Sources/Tasks.h \
- ../Sources/access_functions.h ../Sources/MessagePool.h \
- ../Sources/Priority.h
+ ../Sources/Priority.h ../Sources/access_functions.h \
+ ../Sources/MessagePool.h
 
 C:\project3-colton\dd_scheduler\SDK\rtos\mqx\mqx\source\psp\cortex_m\psptypes.h:
 
@@ -291,8 +291,8 @@ C:/project3-colton/dd_scheduler/SDK/rtos/mqx/mqx/source/include/timer.h:
 
 ../Sources/Tasks.h:
 
+../Sources/Priority.h:
+
 ../Sources/access_functions.h:
 
 ../Sources/MessagePool.h:
-
-../Sources/Priority.h:

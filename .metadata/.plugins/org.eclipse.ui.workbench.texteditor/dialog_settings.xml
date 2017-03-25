@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="MSG_ERROR_BASE" key="selection"/>
+		<item value="" key="selection"/>
 		<list key="findhistory">
+			<item value="zero"/>
+			<item value="printActiveTasksPriorites"/>
 			<item value="MSG_ERROR_BASE"/>
 			<item value="spin"/>
 			<item value="CR"/>
 			<item value="CR\n"/>
 			<item value="println"/>
 			<item value="C_B"/>
-			<item value="numOfRunningTasks"/>
-			<item value="numOf"/>
 		</list>
 		<list key="replacehistory">
 		</list>
